@@ -13,17 +13,17 @@ class Icinga2 extends IPSModule
         $this->RegisterPropertyString('user', 'root');
         $this->RegisterPropertyString('password', '');
 
-		$this->RegisterMessage(0, IPS_KERNELMESSAGE);
+        $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
 
-	public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
-	{
-		parent::MessageSink($TimeStamp, $SenderID, $Message, $Data);
+    public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
+    {
+        parent::MessageSink($TimeStamp, $SenderID, $Message, $Data);
 
-		if ($Message == IPS_KERNELMESSAGE && $Data[0] == KR_READY) {
-			$this->RegisterHook('/hook/Icinga2');
-		}
-	}
+        if ($Message == IPS_KERNELMESSAGE && $Data[0] == KR_READY) {
+            $this->RegisterHook('/hook/Icinga2');
+        }
+    }
 
     public function ApplyChanges()
     {
@@ -38,8 +38,8 @@ class Icinga2 extends IPSModule
         }
 
         if (IPS_GetKernelRunlevel() == KR_READY) {
-			$this->RegisterHook('/hook/Icinga2');
-		}
+            $this->RegisterHook('/hook/Icinga2');
+        }
     }
 
     public function GetConfigurationForm()
@@ -137,27 +137,27 @@ class Icinga2 extends IPSModule
     }
 
     protected function ProcessHookData()
-{
-$this->SendDebug('WebHook SERVER', print_r($_SERVER, true), 0);
+    {
+        $this->SendDebug('WebHook SERVER', print_r($_SERVER, true), 0);
 
-$root = realpath(__DIR__);
-$uri = $_SERVER['REQUEST_URI'];
-if (substr($uri, -1) == '/') {
-http_response_code(404);
-die('File not found!');
-}
-if ($uri == '/hook/Icinga2') {
-$data = file_get_contents('php://input');
-$jdata = json_decode($data, true);
-if ($jdata == '') {
-echo 'malformed data: ' . $data;
-$this->SendDebug(__FUNCTION__, 'malformed data: ' . $data, 0);
-return;
-}
-// DOIT
-return;
-}
-http_response_code(404);
-die('File not found!');
-}
+        $root = realpath(__DIR__);
+        $uri = $_SERVER['REQUEST_URI'];
+        if (substr($uri, -1) == '/') {
+            http_response_code(404);
+            die('File not found!');
+        }
+        if ($uri == '/hook/Icinga2') {
+            $data = file_get_contents('php://input');
+            $jdata = json_decode($data, true);
+            if ($jdata == '') {
+                echo 'malformed data: ' . $data;
+                $this->SendDebug(__FUNCTION__, 'malformed data: ' . $data, 0);
+                return;
+            }
+            // DOIT
+            return;
+        }
+        http_response_code(404);
+        die('File not found!');
+    }
 }
