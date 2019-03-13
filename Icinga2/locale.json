@@ -1,10 +1,24 @@
 {
 	"translations": {
 		"de": {
+			"Host": "Host",
+			"Port": "Port",
+			"Use HTTPS": "HTTPS verwenden",
 			"User": "Benutzer",
 			"Password": "Passwort",
 
-			"Test API-access": "API-Zugriff prüfen",
+			"access ok": "Zugriff in Ordnung",
+			"access failed": "Zugriff fehlgeschlagen",
+			"invalid configuration": "ungültige Konfiguration",
+			"access forbidden": "Zugriff verboten",
+			"server error": "Serverfehler",
+			"http error": "HTTP-Fehler",
+			"invalid data": "ungültige Daten",
+			"hosts": "Server",
+			"services": "Dienste",
+			"started": "gestartet",
+
+			"Verify API-access": "API-Zugriff prüfen",
 			"Module description": "Modulbeschreibung",
 
 			"Instance getting created": "Instanz wird erstellt",
@@ -14,6 +28,7 @@
 			"Instance is not created": "Instanz wurde nicht erzeugt",
 
 			"Instance is inactive (invalid configuration)": "Instanz ist inaktiv (ungültige Konfiguration)",
+			"Instance is inactive (access forbidden)": "Instanz ist inaktiv (Zugriff verboten)",
 			"Instance is inactive (server error)": "Instanz ist inaktiv (Serverfehler)",
 			"Instance is inactive (http error)": "Instanz ist inaktiv (HTTP-Fehler)",
 			"Instance is inactive (invalid data)": "Instanz ist inaktiv (ungültige Daten)"
