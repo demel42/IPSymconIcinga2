@@ -53,7 +53,7 @@ class Icinga2 extends IPSModule
         $formElements[] = ['type' => 'Label', 'label' => 'Icinga2'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'host', 'caption' => 'Host'];
         $formElements[] = ['type' => 'NumberSpinner', 'name' => 'port', 'caption' => 'Port'];
-		$formElements[] = ['type' => 'CheckBox', 'name' => 'use_https', 'caption' => 'Use HTTPS'];
+        $formElements[] = ['type' => 'CheckBox', 'name' => 'use_https', 'caption' => 'Use HTTPS'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'user', 'caption' => 'User'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'password', 'caption' => 'Password'];
 
@@ -73,90 +73,92 @@ class Icinga2 extends IPSModule
         $formStatus[] = ['code' => IS_INACTIVE, 'icon' => 'inactive', 'caption' => 'Instance is inactive'];
         $formStatus[] = ['code' => IS_NOTCREATED, 'icon' => 'inactive', 'caption' => 'Instance is not created'];
 
-		$formStatus[] = ['code' => IS_INVALIDCONFIG, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid configuration)'];
-		$formStatus[] = ['code' => IS_FORBIDDEN, 'icon' => 'error', 'caption' => 'Instance is inactive (access forbidden)'];
-		$formStatus[] = ['code' => IS_SERVERERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (server error)'];
-		$formStatus[] = ['code' => IS_HTTPERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (http error)'];
-		$formStatus[] = ['code' => IS_INVALIDDATA, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid data)'];
+        $formStatus[] = ['code' => IS_INVALIDCONFIG, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid configuration)'];
+        $formStatus[] = ['code' => IS_FORBIDDEN, 'icon' => 'error', 'caption' => 'Instance is inactive (access forbidden)'];
+        $formStatus[] = ['code' => IS_SERVERERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (server error)'];
+        $formStatus[] = ['code' => IS_HTTPERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (http error)'];
+        $formStatus[] = ['code' => IS_INVALIDDATA, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid data)'];
 
         return json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
     }
 
     public function VerifyAccess()
     {
-		$n_hosts = 0;
-		$n_services = 0;
-		$boot_ts = 0;
+        $n_hosts = 0;
+        $n_services = 0;
+        $boot_ts = 0;
 
-		$msg = '';
-		$statuscode = 0;
+        $msg = '';
+        $statuscode = 0;
 
-		$args = '';
-		$mode = 'POST';
-		$postdata = '';
-		$cmd = 'status';
+        $args = '';
+        $mode = 'POST';
+        $postdata = '';
+        $cmd = 'status';
 
-		$data = '';
-		$statuscode = $this->do_HttpRequest($cmd, $args, $postdata, $mode, $data);
-		if ($statuscode == 0) {
-			if (isset($data['results'])) {
-				foreach ($data['results'] as $item) {
-					if ($item['name'] != 'CIB') continue;
-					$status = $item['status'];
-					$n_hosts = $status['num_hosts_up'];
-					$n_down = $status['num_hosts_down'];
-					if ($n_down > 0) {
-						$n_hosts . ' (' . $n_down . ' down)';
-					}
-					$n_services = $status['num_services_ok'];
-					$n_warn = $status['num_services_warning'];
-					$n_crit = $status['num_services_critical'];
-					if ($n_warn && $n_crit) {
-						$n_services . ' (' . $n_warn . ' warn, ' . $n_crit . ' crit)';
-					}
+        $data = '';
+        $statuscode = $this->do_HttpRequest($cmd, $args, $postdata, $mode, $data);
+        if ($statuscode == 0) {
+            if (isset($data['results'])) {
+                foreach ($data['results'] as $item) {
+                    if ($item['name'] != 'CIB') {
+                        continue;
+                    }
+                    $status = $item['status'];
+                    $n_hosts = $status['num_hosts_up'];
+                    $n_down = $status['num_hosts_down'];
+                    if ($n_down > 0) {
+                        $n_hosts . ' (' . $n_down . ' down)';
+                    }
+                    $n_services = $status['num_services_ok'];
+                    $n_warn = $status['num_services_warning'];
+                    $n_crit = $status['num_services_critical'];
+                    if ($n_warn && $n_crit) {
+                        $n_services . ' (' . $n_warn . ' warn, ' . $n_crit . ' crit)';
+                    }
 
-					$boot_ts = time() - $status['uptime'];
-					break;
-				}
-			} else {
-				$statuscode = IS_INVALIDDATA;
-			}
-		}
+                    $boot_ts = time() - $status['uptime'];
+                    break;
+                }
+            } else {
+                $statuscode = IS_INVALIDDATA;
+            }
+        }
 
-		if ($statuscode) {
-			$msg = $this->Translate('access failed') . ':' . PHP_EOL;
-			$msg .= '  ';
-		} else {
-			$msg = $this->Translate('access ok') . ':' . PHP_EOL;
-		}
-		switch ($statuscode) {
-			case IS_INVALIDCONFIG:
-				$msg .= $this->Translate('invalid configuration');
-				break;
-			case IS_FORBIDDEN:
-				$msg .= $this->Translate('access forbidden');
-				break;
-		    case IS_SERVERERROR:
-				$msg .= $this->Translate('server error');
-				break;
-			case IS_HTTPERROR:
-				$msg .= $this->Translate('http error');
-				break;
-			case IS_INVALIDDATA:
-				$msg .= $this->Translate('invalid data');
-				break;
-			default:
-				$msg .= '  ' . $this->Translate('started') . ': ' . date('d.m.Y H:i', $boot_ts) . PHP_EOL;
-				$msg .= '  ' . $this->Translate('hosts') . ': ' . $n_hosts . PHP_EOL;
-				$msg .= '  ' . $this->Translate('services') . ': ' . $n_services . PHP_EOL;
-				break;
-		}
+        if ($statuscode) {
+            $msg = $this->Translate('access failed') . ':' . PHP_EOL;
+            $msg .= '  ';
+        } else {
+            $msg = $this->Translate('access ok') . ':' . PHP_EOL;
+        }
+        switch ($statuscode) {
+            case IS_INVALIDCONFIG:
+                $msg .= $this->Translate('invalid configuration');
+                break;
+            case IS_FORBIDDEN:
+                $msg .= $this->Translate('access forbidden');
+                break;
+            case IS_SERVERERROR:
+                $msg .= $this->Translate('server error');
+                break;
+            case IS_HTTPERROR:
+                $msg .= $this->Translate('http error');
+                break;
+            case IS_INVALIDDATA:
+                $msg .= $this->Translate('invalid data');
+                break;
+            default:
+                $msg .= '  ' . $this->Translate('started') . ': ' . date('d.m.Y H:i', $boot_ts) . PHP_EOL;
+                $msg .= '  ' . $this->Translate('hosts') . ': ' . $n_hosts . PHP_EOL;
+                $msg .= '  ' . $this->Translate('services') . ': ' . $n_services . PHP_EOL;
+                break;
+        }
 
-		if ($statuscode > 0) {
-			$this->SetStatus($statuscode);
-		}
+        if ($statuscode > 0) {
+            $this->SetStatus($statuscode);
+        }
 
-		echo $msg;
+        echo $msg;
     }
 
     private function do_HttpRequest($cmd, $args, $postdata, $mode, &$result)
@@ -178,73 +180,73 @@ class Icinga2 extends IPSModule
             }
         }
 
-		$header = [];
-		$header[] = 'Accept: application/json; charset=utf-8';
+        $header = [];
+        $header[] = 'Accept: application/json; charset=utf-8';
 
-		if ($postdata != '') {
-		    $header[] = 'Content-Type: application/json';
-			$postdata = json_encode($postdata);
-		}
+        if ($postdata != '') {
+            $header[] = 'Content-Type: application/json';
+            $postdata = json_encode($postdata);
+        }
 
-		if ($mode == 'POST') {
-			$header[] = 'X-HTTP-Method-Override: GET';
-		}
+        if ($mode == 'POST') {
+            $header[] = 'X-HTTP-Method-Override: GET';
+        }
 
         $this->SendDebug(__FUNCTION__, 'http: url=' . $url . ', mode=' . $mode . ' auth=' . $user . ':' . $password, 0);
-		$this->SendDebug(__FUNCTION__, '  header=' . print_r($header, true), 0);
-		if ($postdata != '') {
-			$this->SendDebug(__FUNCTION__, '  postdata=' . $postdata, 0);
-		}
+        $this->SendDebug(__FUNCTION__, '  header=' . print_r($header, true), 0);
+        if ($postdata != '') {
+            $this->SendDebug(__FUNCTION__, '  postdata=' . $postdata, 0);
+        }
 
         $time_start = microtime(true);
 
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-		curl_setopt($ch, CURLOPT_USERPWD, $user . ':' . $password);
-		switch ($mode) {
-			case 'GET':
-				break;
-			case 'POST':
-				curl_setopt($ch, CURLOPT_POST, true);
-				curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
-				break;
-			case 'PUT':
-				curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
-				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $mode);
-				break;
-			case 'DELETE':
-				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $mode);
-				break;
-		}
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		$cdata = curl_exec($ch);
-		$cerrno = curl_errno($ch);
-		$cerror = $cerrno ? curl_error($ch) : '';
-		$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		curl_close($ch);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_USERPWD, $user . ':' . $password);
+        switch ($mode) {
+            case 'GET':
+                break;
+            case 'POST':
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
+                break;
+            case 'PUT':
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $mode);
+                break;
+            case 'DELETE':
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $mode);
+                break;
+        }
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $cdata = curl_exec($ch);
+        $cerrno = curl_errno($ch);
+        $cerror = $cerrno ? curl_error($ch) : '';
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
 
-		$duration = round(microtime(true) - $time_start, 2);
-		$this->SendDebug(__FUNCTION__, ' => errno=' . $cerrno . ', httpcode=' . $httpcode . ', duration=' . $duration . 's', 0);
-		$this->SendDebug(__FUNCTION__, '    cdata=' . $cdata, 0);
+        $duration = round(microtime(true) - $time_start, 2);
+        $this->SendDebug(__FUNCTION__, ' => errno=' . $cerrno . ', httpcode=' . $httpcode . ', duration=' . $duration . 's', 0);
+        $this->SendDebug(__FUNCTION__, '    cdata=' . $cdata, 0);
 
-		$statuscode = 0;
+        $statuscode = 0;
         $err = '';
         $result = '';
         if ($cerrno) {
             $statuscode = IS_INVALIDDATA;
             $err = 'got curl-errno ' . $cerrno . ' (' . $cerror . ')';
-		} elseif ($httpcode != 200) {
-			if ($httpcode == 403) {
-				$err = 'got http-code ' . $httpcode . ' (forbidden)';
-				$statuscode = IS_FORBIDDEN;
-			} elseif ($httpcode >= 500 && $httpcode <= 599) {
-				$statuscode = IS_SERVERERROR;
-				$err = 'got http-code ' . $httpcode . ' (server error)';
-			} else {
+        } elseif ($httpcode != 200) {
+            if ($httpcode == 403) {
+                $err = 'got http-code ' . $httpcode . ' (forbidden)';
+                $statuscode = IS_FORBIDDEN;
+            } elseif ($httpcode >= 500 && $httpcode <= 599) {
+                $statuscode = IS_SERVERERROR;
+                $err = 'got http-code ' . $httpcode . ' (server error)';
+            } else {
                 $err = "got http-code $httpcode";
                 $statuscode = IS_HTTPERROR;
             }
@@ -256,7 +258,7 @@ class Icinga2 extends IPSModule
             }
         }
 
-		if ($statuscode) {
+        if ($statuscode) {
             $this->LogMessage('url=' . $url . ' => statuscode=' . $statuscode . ', err=' . $err, KL_WARNING);
             $this->SendDebug(__FUNCTION__, ' => statuscode=' . $statuscode . ', err=' . $err, 0);
         }
