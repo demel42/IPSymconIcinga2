@@ -1,0 +1,13 @@
+{
+	"id": "{970F623C-2A4B-4DB3-8C65-786381567D50}",
+	"name": "Icinga2",
+	"type": 3,
+	"vendor": "",
+	"aliases": [
+			"Icinga2"
+		],
+	"parentRequirements": [],
+	"childRequirements": [],
+	"implemented": [],
+	"prefix": "Icinga2"
+}
