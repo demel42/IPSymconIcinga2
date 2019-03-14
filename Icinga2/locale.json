@@ -6,6 +6,8 @@
 			"Use HTTPS": "HTTPS verwenden",
 			"User": "Benutzer",
 			"Password": "Passwort",
+			"Update status every X seconds": "Aktualisieren Status alle X Sekunden",
+			"Seconds": "Minutes",
 
 			"access ok": "Zugriff in Ordnung",
 			"access failed": "Zugriff fehlgeschlagen",
@@ -18,7 +20,16 @@
 			"services": "Dienste",
 			"started": "gestartet",
 
+			"Boot time": "Startzeitpunkt",
+			"hosts with state: up": "Server mit Status: läuft",
+			"hosts with state: down": "Server mit Status: gestoppt",
+			"services with state: ok": "Dienst mit Status: Ok",
+			"services with state: warning": "Dienst mit Status: Warnung",
+			"services with state: critical": "Dienst mit Status: Kritisch",
+			"Last update": "letzte AKtualisierung",
+
 			"Verify API-access": "API-Zugriff prüfen",
+			"Update status": "Aktualisiere Status",
 			"Module description": "Modulbeschreibung",
 
 			"Instance getting created": "Instanz wird erstellt",
