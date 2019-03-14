@@ -128,6 +128,7 @@ class Icinga2 extends IPSModule
                         continue;
                     }
                     $status = $item['status'];
+					$this->SendDebug(__FUNCTION__, 'name=' . $item['name'] . ', status=' . print_r($status, true), 0);
 
                     $n_hosts_up = $status['num_hosts_up'];
 					$this->SetValue('HostsUp', $n_hosts_up);
