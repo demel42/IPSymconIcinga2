@@ -16,9 +16,9 @@ class Icinga2 extends IPSModule
         $this->RegisterPropertyString('user', 'icinga2-director');
         $this->RegisterPropertyString('password', '');
 
-		$this->RegisterPropertyInteger('update_interval', '60');
+        $this->RegisterPropertyInteger('update_interval', '60');
 
-		$this->RegisterTimer('UpdateStatus', 0, 'Icinga2_UpdateStatus(' . $this->InstanceID . ');');
+        $this->RegisterTimer('UpdateStatus', 0, 'Icinga2_UpdateStatus(' . $this->InstanceID . ');');
 
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
@@ -27,22 +27,22 @@ class Icinga2 extends IPSModule
     {
         parent::ApplyChanges();
 
-		parent::ApplyChanges();
+        parent::ApplyChanges();
 
-		$vpos = 0;
-		$this->MaintainVariable('BootTime', $this->Translate('Boot time'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
+        $vpos = 0;
+        $this->MaintainVariable('BootTime', $this->Translate('Boot time'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
 
-		$vpos = 10;
-		$this->MaintainVariable('HostsUp', $this->Translate('hosts with state: up'), VARIABLETYPE_INTEGER, '', $vpos++, true);
-		$this->MaintainVariable('HostsDown', $this->Translate('hosts with state: down'), VARIABLETYPE_INTEGER, '', $vpos++, true);
+        $vpos = 10;
+        $this->MaintainVariable('HostsUp', $this->Translate('hosts with state: up'), VARIABLETYPE_INTEGER, '', $vpos++, true);
+        $this->MaintainVariable('HostsDown', $this->Translate('hosts with state: down'), VARIABLETYPE_INTEGER, '', $vpos++, true);
 
-		$vpos = 20;
-		$this->MaintainVariable('ServicesOk', $this->Translate('services with state: ok'), VARIABLETYPE_INTEGER, '', $vpos++, true);
-		$this->MaintainVariable('ServicesWarning', $this->Translate('services with state: warning'), VARIABLETYPE_INTEGER, '', $vpos++, true);
-		$this->MaintainVariable('ServicesCritical', $this->Translate('services with state: critical'), VARIABLETYPE_INTEGER, '', $vpos++, true);
+        $vpos = 20;
+        $this->MaintainVariable('ServicesOk', $this->Translate('services with state: ok'), VARIABLETYPE_INTEGER, '', $vpos++, true);
+        $this->MaintainVariable('ServicesWarning', $this->Translate('services with state: warning'), VARIABLETYPE_INTEGER, '', $vpos++, true);
+        $this->MaintainVariable('ServicesCritical', $this->Translate('services with state: critical'), VARIABLETYPE_INTEGER, '', $vpos++, true);
 
-		$vpos = 100;
-		$this->MaintainVariable('LastUpdate', $this->Translate('Last update'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
+        $vpos = 100;
+        $this->MaintainVariable('LastUpdate', $this->Translate('Last update'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
 
         $host = $this->ReadPropertyString('host');
         $port = $this->ReadPropertyInteger('port');
@@ -58,7 +58,7 @@ class Icinga2 extends IPSModule
             $this->RegisterHook('/hook/Icinga2');
         }
 
-		$this->SetUpdateInterval();
+        $this->SetUpdateInterval();
     }
 
     public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
@@ -70,12 +70,12 @@ class Icinga2 extends IPSModule
         }
     }
 
-	protected function SetUpdateInterval()
-	{
-		$min = $this->ReadPropertyInteger('update_interval');
-		$msec = $min > 0 ? $min * 1000 * 60 : 0;
-		$this->SetTimerInterval('UpdateStatus', $msec);
-	}
+    protected function SetUpdateInterval()
+    {
+        $min = $this->ReadPropertyInteger('update_interval');
+        $msec = $min > 0 ? $min * 1000 * 60 : 0;
+        $this->SetTimerInterval('UpdateStatus', $msec);
+    }
 
     public function GetConfigurationForm()
     {
@@ -87,13 +87,13 @@ class Icinga2 extends IPSModule
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'user', 'caption' => 'User'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'password', 'caption' => 'Password'];
 
-		$formElements[] = ['type' => 'Label', 'label' => ''];
-		$formElements[] = ['type' => 'Label', 'label' => 'Update status every X seconds'];
-		$formElements[] = ['type' => 'NumberSpinner', 'name' => 'update_interval', 'caption' => 'Seconds'];
+        $formElements[] = ['type' => 'Label', 'label' => ''];
+        $formElements[] = ['type' => 'Label', 'label' => 'Update status every X seconds'];
+        $formElements[] = ['type' => 'NumberSpinner', 'name' => 'update_interval', 'caption' => 'Seconds'];
 
         $formActions = [];
         $formActions[] = ['type' => 'Button', 'label' => 'Verify API-access', 'onClick' => 'Icinga2_VerifyAccess($id);'];
-		$formActions[] = ['type' => 'Button', 'label' => 'Update status', 'onClick' => 'Icinga2_UpdateStatus($id);'];
+        $formActions[] = ['type' => 'Button', 'label' => 'Update status', 'onClick' => 'Icinga2_UpdateStatus($id);'];
         $formActions[] = ['type' => 'Label', 'label' => '____________________________________________________________________________________________________'];
         $formActions[] = [
                             'type'    => 'Button',
@@ -117,8 +117,8 @@ class Icinga2 extends IPSModule
         return json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
     }
 
-	public function UpdateStatus()
-	{
+    public function UpdateStatus()
+    {
         $data = '';
         $statuscode = $this->do_HttpRequest('status', '', '', 'POST', $data);
         if ($statuscode == 0) {
@@ -128,24 +128,24 @@ class Icinga2 extends IPSModule
                         continue;
                     }
                     $status = $item['status'];
-					$this->SendDebug(__FUNCTION__, 'name=' . $item['name'] . ', status=' . print_r($status, true), 0);
+                    $this->SendDebug(__FUNCTION__, 'name=' . $item['name'] . ', status=' . print_r($status, true), 0);
 
                     $n_hosts_up = $status['num_hosts_up'];
-					$this->SetValue('HostsUp', $n_hosts_up);
+                    $this->SetValue('HostsUp', $n_hosts_up);
                     $n_hosts_down = $status['num_hosts_down'];
-					$this->SetValue('HostsDown', $n_hosts_down);
+                    $this->SetValue('HostsDown', $n_hosts_down);
 
                     $n_services_ok = $status['num_services_ok'];
-					$this->SetValue('ServicesOk', $n_services_ok);
+                    $this->SetValue('ServicesOk', $n_services_ok);
                     $n_services_warning = $status['num_services_warning'];
-					$this->SetValue('ServicesWarning', $n_services_warning);
+                    $this->SetValue('ServicesWarning', $n_services_warning);
                     $n_services_critical = $status['num_services_critical'];
-					$this->SetValue('ServicesCritical', $n_services_critical);
+                    $this->SetValue('ServicesCritical', $n_services_critical);
 
                     $boot_ts = time() - $status['uptime'];
-					$this->SetValue('BootTime', $boot_ts);
+                    $this->SetValue('BootTime', $boot_ts);
 
-					$this->SetValue('LastUpdate', time());
+                    $this->SetValue('LastUpdate', time());
 
                     break;
                 }
@@ -153,9 +153,9 @@ class Icinga2 extends IPSModule
                 $statuscode = IS_INVALIDDATA;
             }
         }
-		
-		$this->SetStatus($statuscode ? $statuscode : IS_ACTIVE);
-	}
+
+        $this->SetStatus($statuscode ? $statuscode : IS_ACTIVE);
+    }
 
     public function VerifyAccess()
     {
@@ -177,7 +177,7 @@ class Icinga2 extends IPSModule
                     $status = $item['status'];
                     $n_hosts_up = $status['num_hosts_up'];
                     $n_hosts_down = $status['num_hosts_down'];
-					$s_hosts = $n_hosts_up . ' up';
+                    $s_hosts = $n_hosts_up . ' up';
                     if ($n_hosts_down) {
                         $s_hosts .= ', ' . $n_hosts_down . ' down';
                     }
@@ -185,11 +185,11 @@ class Icinga2 extends IPSModule
                     $n_services_ok = $status['num_services_ok'];
                     $n_services_warning = $status['num_services_warning'];
                     $n_services_critical = $status['num_services_critical'];
-					$s_services = $n_services_ok . ' ok';
+                    $s_services = $n_services_ok . ' ok';
                     if ($n_services_warning) {
                         $s_services .= ', ' . $n_services_warning . ' warn';
                     }
-					if ($n_services_critical) {
+                    if ($n_services_critical) {
                         $s_services .= ', ' . $n_services_critical . ' crit';
                     }
 
