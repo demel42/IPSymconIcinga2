@@ -16,6 +16,9 @@ class Icinga2 extends IPSModule
         $this->RegisterPropertyString('user', 'icinga2-director');
         $this->RegisterPropertyString('password', '');
 
+        $this->RegisterPropertyString('hook_user', '');
+        $this->RegisterPropertyString('hook_password', '');
+
         $this->RegisterPropertyInteger('update_interval', '60');
 
         $this->RegisterTimer('UpdateStatus', 0, 'Icinga2_UpdateStatus(' . $this->InstanceID . ');');
@@ -33,13 +36,13 @@ class Icinga2 extends IPSModule
         $this->MaintainVariable('BootTime', $this->Translate('Boot time'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
 
         $vpos = 10;
-        $this->MaintainVariable('HostsUp', $this->Translate('hosts with state: up'), VARIABLETYPE_INTEGER, '', $vpos++, true);
-        $this->MaintainVariable('HostsDown', $this->Translate('hosts with state: down'), VARIABLETYPE_INTEGER, '', $vpos++, true);
+        $this->MaintainVariable('HostsUp', $this->Translate('hosts with state: UP'), VARIABLETYPE_INTEGER, '', $vpos++, true);
+        $this->MaintainVariable('HostsDown', $this->Translate('hosts with state: DOWN'), VARIABLETYPE_INTEGER, '', $vpos++, true);
 
         $vpos = 20;
-        $this->MaintainVariable('ServicesOk', $this->Translate('services with state: ok'), VARIABLETYPE_INTEGER, '', $vpos++, true);
-        $this->MaintainVariable('ServicesWarning', $this->Translate('services with state: warning'), VARIABLETYPE_INTEGER, '', $vpos++, true);
-        $this->MaintainVariable('ServicesCritical', $this->Translate('services with state: critical'), VARIABLETYPE_INTEGER, '', $vpos++, true);
+        $this->MaintainVariable('ServicesOk', $this->Translate('services with state: OK'), VARIABLETYPE_INTEGER, '', $vpos++, true);
+        $this->MaintainVariable('ServicesWarning', $this->Translate('services with state: WARNING'), VARIABLETYPE_INTEGER, '', $vpos++, true);
+        $this->MaintainVariable('ServicesCritical', $this->Translate('services with state: CRITICAL'), VARIABLETYPE_INTEGER, '', $vpos++, true);
 
         $vpos = 100;
         $this->MaintainVariable('LastUpdate', $this->Translate('Last update'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
@@ -73,7 +76,7 @@ class Icinga2 extends IPSModule
     protected function SetUpdateInterval()
     {
         $min = $this->ReadPropertyInteger('update_interval');
-        $msec = $min > 0 ? $min * 1000 * 60 : 0;
+        $msec = $min > 0 ? $min * 1000 : 0;
         $this->SetTimerInterval('UpdateStatus', $msec);
     }
 
@@ -86,6 +89,10 @@ class Icinga2 extends IPSModule
         $formElements[] = ['type' => 'CheckBox', 'name' => 'use_https', 'caption' => 'Use HTTPS'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'user', 'caption' => 'User'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'password', 'caption' => 'Password'];
+
+        $formElements[] = ['type' => 'Label', 'label' => 'Access to webhook'];
+        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'hook_user', 'caption' => 'User'];
+        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'hook_password', 'caption' => 'Password'];
 
         $formElements[] = ['type' => 'Label', 'label' => ''];
         $formElements[] = ['type' => 'Label', 'label' => 'Update status every X seconds'];
@@ -317,14 +324,14 @@ class Icinga2 extends IPSModule
             $err = 'got curl-errno ' . $cerrno . ' (' . $cerror . ')';
         } elseif ($httpcode != 200) {
             if ($httpcode == 403) {
-                $err = 'got http-code ' . $httpcode . ' (forbidden)';
                 $statuscode = IS_FORBIDDEN;
+                $err = 'got http-code ' . $httpcode . ' (forbidden)';
             } elseif ($httpcode >= 500 && $httpcode <= 599) {
                 $statuscode = IS_SERVERERROR;
                 $err = 'got http-code ' . $httpcode . ' (server error)';
             } else {
-                $err = "got http-code $httpcode";
                 $statuscode = IS_HTTPERROR;
+                $err = "got http-code $httpcode";
             }
         } else {
             $result = json_decode($cdata, true);
@@ -342,9 +349,137 @@ class Icinga2 extends IPSModule
         return $statuscode;
     }
 
+    protected function DetermineStatus()
+	{
+		$now = time();
+
+		$startTime = IPS_GetKernelStartTime();
+
+		$sdata = IPS_GetSnapshot();
+		$udata = utf8_encode($sdata);
+		$snapshot = json_decode($udata, true);
+		$tps = floor($snapshot['timestamp'] / ($now - $startTime) * 100) / 100;
+
+		$version = IPS_GetKernelVersion();
+
+		$threadList = IPS_GetScriptThreadList();
+		$threadCount = 0;
+		foreach ($threadList as $t => $i) {
+			$thread = IPS_GetScriptThread ($i);
+			$ScriptID = $thread['ScriptID'];
+			if ($ScriptID != 0) {
+				$threadCount++;
+			}
+		}
+		$this->SendDebug(__FUNCTION__, 'threadCount=' . $threadCount, 0);
+
+		$timerCount = 0;
+		$timerList = IPS_GetTimerList();
+		foreach ($timerList as $t) {
+			$timer = IPS_GetTimer($t);
+			if ($timer['NextRun'] > 0) {
+				$timerCount++;
+			}
+		}
+		$this->SendDebug(__FUNCTION__, 'timerCount=' . $timerCount, 0);
+
+		$instanceList = IPS_GetInstanceList();
+		$instanceCount = count($instanceList);
+		$instanceError = 0;
+		foreach ($instanceList as $id) {
+			$instance = IPS_GetInstance($id);
+			if ($instance['InstanceStatus'] <= 103) {
+				continue;
+			}
+			$instanceError++;
+		}
+		$this->SendDebug(__FUNCTION__, 'instanceCount=' . $instanceCount . ', instanceError=' . $instanceError, 0);
+			
+		$scriptList = IPS_GetScriptList();
+		$scriptCount = count($scriptList);
+		$scriptError = 0;
+		foreach ($scriptList as $id) {
+			$script = IPS_GetScript($id);
+			if (!$script['ScriptIsBroken']) {
+				continue;
+			}
+			$scriptError++;
+		}
+		$this->SendDebug(__FUNCTION__, 'scriptCount=' . $scriptCount . ', scriptError=' . $scriptError, 0);
+
+		$linkList = IPS_GetLinkList();
+		$linkCount = count($linkList);
+		$linkError = 0;
+		foreach ($linkList as $id) {
+			$link = IPS_GetLink($id);
+			if (IPS_ObjectExists($link['LinkID'])) {
+				continue;
+			}
+			$linkError++;
+		}
+		$this->SendDebug(__FUNCTION__, 'linkCount=' . $linkCount . ', linkError=' . $linkError, 0);
+
+		$eventList = IPS_GetEventList();
+		$eventCount = count($eventList);
+		$eventActive = 0;
+		$eventError = 0;
+		foreach ($eventList as $id) {
+			$event = IPS_GetEvent($id);
+			$ok = true;
+			$vid = $event['TriggerVariableID'];
+			if ($event['EventActive']) {
+				$eventActive++;
+			}
+			if ($vid == 0 || IPS_ObjectExists($vid)) {
+				continue;
+			}
+			$eventError++;
+		}
+		$this->SendDebug(__FUNCTION__, 'eventCount=' . $eventCount . ', eventActive=' . $eventActive . ', eventError=' . $eventError, 0);
+
+		$moduleList = IPS_GetModuleList();
+		$moduleCount = count($moduleList);
+		$this->SendDebug(__FUNCTION__, 'modulCount=' . $moduleCount, 0);
+
+		$varList = IPS_GetVariableList();
+		$varCount = count($varList);
+		$this->SendDebug(__FUNCTION__, 'varCount=' . $varCount, 0);
+
+		$status = 'OK';
+
+		$info = 'Version:' . $version . ', start: ' . date('d.m.Y H:i', $startTime);
+		$info .= ', threads: ' . $threadCount;
+		$info .= ', timer: ' . $timerCount;
+		if ($instanceError) {
+			$info .= ', invalid instances: ' . $instanceError;
+			$status = 'WARNING';
+		}
+		if ($linkError) {
+			$info .= ', broken links: ' . $linkError;
+			$status = 'WARNING';
+		}
+		if ($scriptError) {
+			$info .= ', faulty scripts: ' . $scriptError;
+			$status = 'WARNING';
+		}
+
+		$perfdata = [];
+		$perfdata['threadCount'] = $threadCount;
+		$perfdata['timerCount'] = $timerCount;
+		$perfdata['tps'] = $tps;
+
+		$jret = [
+				'status'   => $status,
+				'info'     => $info,
+				'perfdata' => $perfdata,
+			];
+		return json_encode($jret);
+	}
+
     protected function ProcessHookData()
     {
-        $this->SendDebug('WebHook SERVER', print_r($_SERVER, true), 0);
+        $this->SendDebug(__FUNCTION__, '_SERVER=' . print_r($_SERVER, true), 0);
+		$this->SendDebug(__FUNCTION__, '_POST=' . print_r($_POST, true), 0);
 
         $root = realpath(__DIR__);
         $uri = $_SERVER['REQUEST_URI'];
@@ -352,15 +487,37 @@ class Icinga2 extends IPSModule
             http_response_code(404);
             die('File not found!');
         }
+		$hook_user = $this->ReadPropertyString('hook_user');
+		$hook_password = $this->ReadPropertyString('hook_password');
+		if ($hook_user != '' || $hook_password != '') {
+
+		if(!isset($_SERVER['PHP_AUTH_USER']))
+			$_SERVER['PHP_AUTH_USER'] = "";
+		if(!isset($_SERVER['PHP_AUTH_PW']))
+			$_SERVER['PHP_AUTH_PW'] = "";
+
+		if(($_SERVER['PHP_AUTH_USER'] != $hook_user) || ($_SERVER['PHP_AUTH_PW'] != $hook_password)) {
+		header('WWW-Authenticate: Basic Realm="Geofency WebHook"');
+		header('HTTP/1.0 401 Unauthorized');
+		echo "Authorization required";
+		return;
+		}
+		}
         if ($uri == '/hook/Icinga2') {
-            $data = file_get_contents('php://input');
-            $jdata = json_decode($data, true);
-            if ($jdata == '') {
-                echo 'malformed data: ' . $data;
-                $this->SendDebug(__FUNCTION__, 'malformed data: ' . $data, 0);
-                return;
-            }
-            // DOIT
+			$jdata = $_POST;
+			$mode = isset($jdata['mode']) ? $jdata['mode'] :'';
+			$this->SendDebug(__FUNCTION__, 'mode: ' . $mode, 0);
+			switch ($mode) {
+				case 'status':
+					$ret = $this->DetermineStatus();
+					$this->SendDebug(__FUNCTION__, 'ret=' . $ret, 0);
+					echo $ret . PHP_EOL;
+					break;
+				default:
+					http_response_code(404);
+					die('Mode not found!');
+					break;
+			}
             return;
         }
         http_response_code(404);

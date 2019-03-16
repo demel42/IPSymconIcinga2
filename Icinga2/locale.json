@@ -6,6 +6,8 @@
 			"Use HTTPS": "HTTPS verwenden",
 			"User": "Benutzer",
 			"Password": "Passwort",
+			"Access to webhook": "Zugriff auf den WebHook",
+			"Password": "Passwort",
 			"Update status every X seconds": "Aktualisieren Status alle X Sekunden",
 			"Seconds": "Minutes",
 
@@ -21,12 +23,12 @@
 			"started": "gestartet",
 
 			"Boot time": "Startzeitpunkt",
-			"hosts with state: up": "Server mit Status: läuft",
-			"hosts with state: down": "Server mit Status: gestoppt",
-			"services with state: ok": "Dienst mit Status: Ok",
-			"services with state: warning": "Dienst mit Status: Warnung",
-			"services with state: critical": "Dienst mit Status: Kritisch",
-			"Last update": "letzte AKtualisierung",
+			"hosts with state: up": "Server mit Status: UP",
+			"hosts with state: down": "Server mit Status: DOWN",
+			"services with state: ok": "Dienst mit Status: OK",
+			"services with state: warning": "Dienst mit Status: WARNING",
+			"services with state: critical": "Dienst mit Status: CRITICAL",
+			"Last update": "letzte Aktualisierung",
 
 			"Verify API-access": "API-Zugriff prüfen",
 			"Update status": "Aktualisiere Status",
