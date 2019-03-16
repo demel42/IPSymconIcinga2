@@ -367,8 +367,8 @@ class Icinga2 extends IPSModule
             return $ret;
         }
 
-        $proc = isset($_POST['proc']) ? $_POST['proc'] : '';
-        if ($proc != 'status') {
+        $mode = isset($_POST['mode']) ? $_POST['mode'] : '';
+        if ($mode != 'status') {
             return false;
         }
 
@@ -483,11 +483,29 @@ class Icinga2 extends IPSModule
             $info .= ', faulty scripts=' . $scriptError;
             $status = 'WARNING';
         }
+        if ($eventError) {
+            $info .= ', invalid events=' . $eventError;
+            $status = 'WARNING';
+        }
 
         $perfdata = [];
+        $perfdata['tps'] = $tps;
         $perfdata['threadCount'] = $threadCount;
         $perfdata['timerCount'] = $timerCount;
-        $perfdata['tps'] = $tps;
+
+		/*
+		$perfdata['instanceCount'] = $instanceCount;
+		$perfdata['instanceError'] = $instanceError;
+		$perfdata['scriptCount'] = $scriptCount;
+		$perfdata['scriptError'] = $scriptError;
+		$perfdata['linkCount'] = $linkCount;
+		$perfdata['linkError'] = $linkError;
+		$perfdata['eventCount'] = $eventCount;
+		$perfdata['eventActive'] = $eventActive;
+		$perfdata['eventError'] = $eventError;
+		$perfdata['moduleCount'] = $moduleCount;
+		$perfdata['varCount'] = $varCount;
+		*/
 
         $jret = [
                 'status'   => $status,
@@ -569,7 +587,7 @@ class Icinga2 extends IPSModule
 
             if ($ret == false) {
                 http_response_code(404);
-                die('Mode not found!');
+                die('Proc not found!');
             }
             $this->SendDebug(__FUNCTION__, 'ret=' . $ret, 0);
             echo $ret . PHP_EOL;
