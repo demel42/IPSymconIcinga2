@@ -493,19 +493,19 @@ class Icinga2 extends IPSModule
         $perfdata['threadCount'] = $threadCount;
         $perfdata['timerCount'] = $timerCount;
 
-		/*
-		$perfdata['instanceCount'] = $instanceCount;
-		$perfdata['instanceError'] = $instanceError;
-		$perfdata['scriptCount'] = $scriptCount;
-		$perfdata['scriptError'] = $scriptError;
-		$perfdata['linkCount'] = $linkCount;
-		$perfdata['linkError'] = $linkError;
-		$perfdata['eventCount'] = $eventCount;
-		$perfdata['eventActive'] = $eventActive;
-		$perfdata['eventError'] = $eventError;
-		$perfdata['moduleCount'] = $moduleCount;
-		$perfdata['varCount'] = $varCount;
-		*/
+        /*
+        $perfdata['instanceCount'] = $instanceCount;
+        $perfdata['instanceError'] = $instanceError;
+        $perfdata['scriptCount'] = $scriptCount;
+        $perfdata['scriptError'] = $scriptError;
+        $perfdata['linkCount'] = $linkCount;
+        $perfdata['linkError'] = $linkError;
+        $perfdata['eventCount'] = $eventCount;
+        $perfdata['eventActive'] = $eventActive;
+        $perfdata['eventError'] = $eventError;
+        $perfdata['moduleCount'] = $moduleCount;
+        $perfdata['varCount'] = $varCount;
+        */
 
         $jret = [
                 'status'   => $status,
