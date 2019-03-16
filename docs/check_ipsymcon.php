@@ -37,6 +37,7 @@ if ($mode == '') {
 }
 
 $postdata = [];
+$postdata['proc'] = 'check';
 $postdata['mode'] = $mode;
 if (isset($options['spec'])) {
     $postdata['spec'] = $options['spec'];

@@ -19,7 +19,7 @@ class Icinga2 extends IPSModule
         $this->RegisterPropertyString('hook_user', '');
         $this->RegisterPropertyString('hook_password', '');
 
-        $this->RegisterPropertyInteger('status_script', 0);
+        $this->RegisterPropertyInteger('check_script', 0);
         $this->RegisterPropertyInteger('action_script', 0);
         $this->RegisterPropertyInteger('notify_script', 0);
 
@@ -98,8 +98,8 @@ class Icinga2 extends IPSModule
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'hook_user', 'caption' => 'User'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'hook_password', 'caption' => 'Password'];
 
-        $formElements[] = ['type' => 'Label', 'label' => 'script for webhook to use for mode ...'];
-        $formElements[] = ['type' => 'SelectScript', 'name' => 'status_script', 'caption' => ' ... "status"'];
+        $formElements[] = ['type' => 'Label', 'label' => 'script for webhook to use for ...'];
+        $formElements[] = ['type' => 'SelectScript', 'name' => 'check_script', 'caption' => ' ... "check"'];
         $formElements[] = ['type' => 'SelectScript', 'name' => 'action_script', 'caption' => ' ... "action"'];
         $formElements[] = ['type' => 'SelectScript', 'name' => 'notify_script', 'caption' => ' ... "notify"'];
 
@@ -358,14 +358,18 @@ class Icinga2 extends IPSModule
         return $statuscode;
     }
 
-    protected function DetermineStatus($jdata)
+    protected function PerformCheck($jdata)
     {
-        $status_script = $this->ReadPropertyInteger('status_script');
-        if ($status_script > 0) {
+        $check_script = $this->ReadPropertyInteger('check_script');
+        if ($check_script > 0) {
             $jdata['InstanceID'] = $this->InstanceID;
-            $ret = IPS_RunScriptWaitEx($status_script, $jdata);
+            $ret = IPS_RunScriptWaitEx($check_script, $jdata);
             return $ret;
         }
+
+		$proc = isset($_POST['proc']) ? $_POST['proc'] : '';
+		if ($proc != 'status')
+			return false;
 
         $now = time();
 
@@ -545,11 +549,11 @@ class Icinga2 extends IPSModule
             }
         }
         if ($uri == '/hook/Icinga2') {
-            $mode = isset($_POST['mode']) ? $_POST['mode'] : '';
-            $this->SendDebug(__FUNCTION__, 'mode: ' . $mode, 0);
-            switch ($mode) {
-                case 'status':
-                    $ret = $this->DetermineStatus($_POST);
+            $proc = isset($_POST['proc']) ? $_POST['proc'] : '';
+            $this->SendDebug(__FUNCTION__, 'proc: ' . $proc, 0);
+            switch ($proc) {
+                case 'check':
+                    $ret = $this->PerformCheck($_POST);
                     break;
                 case 'notify':
                     $ret = $this->SentNotification($_POST);
