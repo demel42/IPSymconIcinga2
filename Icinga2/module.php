@@ -367,9 +367,10 @@ class Icinga2 extends IPSModule
             return $ret;
         }
 
-		$proc = isset($_POST['proc']) ? $_POST['proc'] : '';
-		if ($proc != 'status')
-			return false;
+        $proc = isset($_POST['proc']) ? $_POST['proc'] : '';
+        if ($proc != 'status') {
+            return false;
+        }
 
         $now = time();
 
