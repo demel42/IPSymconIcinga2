@@ -38,8 +38,9 @@ if ($mode == '') {
 
 $postdata = [];
 $postdata['mode'] = $mode;
-if (isset($options['spec']))
-	$postdata['spec'] = $options['spec'];
+if (isset($options['spec'])) {
+    $postdata['spec'] = $options['spec'];
+}
 
 $url = (isset($options['https']) && $options['https'] ? 'https' : 'http') . '://' . $host . ':' . $port . '/hook/Icinga2';
 
@@ -89,7 +90,7 @@ if ($cerrno) {
 
 if ($err != '') {
     echo 'ERROR - ' . $err . PHP_EOL;
-	echo '        ' . $cdata . PHP_EOL;
+    echo '        ' . $cdata . PHP_EOL;
     exit(STATE_UNKNOWN);
 }
 
