@@ -463,7 +463,7 @@ class Icinga2 extends IPSModule
 
         $status = 'OK';
 
-        $info = 'start=' . date('d.m.Y H:i', $startTime);
+        $info = 'started ' . date('d.m.Y H:i', $startTime);
         $info .= ', threads=' . $threadCount;
         $info .= ', timer=' . $timerCount;
         if ($instanceError) {

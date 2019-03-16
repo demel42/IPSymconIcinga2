@@ -14,23 +14,23 @@ $opts_l = [
         'user:',
         'password:',
         'mode:',
+        'spec:',
     ];
 
 $options = getopt($opts_s, $opts_l);
 
 $host = isset($options['host']) ? $options['host'] : '';
-$port = isset($options['port']) ? $options['port'] : 3777;
-
-$user = isset($options['user']) ? $options['user'] : '';
-$password = isset($options['password']) ? $options['password'] : '';
-
-$mode = isset($options['mode']) ? $options['mode'] : 'status';
-
 if ($host == '') {
     echo 'UNKNOWN - missing host' . PHP_EOL;
     exit(STATE_UNKOWN);
 }
 
+$port = isset($options['port']) ? $options['port'] : 3777;
+
+$user = isset($options['user']) ? $options['user'] : '';
+$password = isset($options['password']) ? $options['password'] : '';
+
+$mode = isset($options['mode']) ? $options['mode'] : '';
 if ($mode == '') {
     echo 'UNKNOWN - missing mode' . PHP_EOL;
     exit(STATE_UNKOWN);
@@ -38,8 +38,8 @@ if ($mode == '') {
 
 $postdata = [];
 $postdata['mode'] = $mode;
-// $postdata['data'] = 'data_abc';
-// $postdata['max'] = 'moritz';
+if (isset($options['spec']))
+	$postdata['spec'] = $options['spec'];
 
 $url = (isset($options['https']) && $options['https'] ? 'https' : 'http') . '://' . $host . ':' . $port . '/hook/Icinga2';
 
@@ -78,17 +78,18 @@ if ($cerrno) {
 } else {
     $result = json_decode($cdata, true);
     if ($result == '') {
-        $err = 'malformed response (' . $cdata . ')';
+        $err = 'malformed response';
     } else {
         $jdata = json_decode($cdata, true);
         if (!isset($jdata['status'])) {
-            $err = 'malformed data (' . $cdata . ')';
+            $err = 'malformed data';
         }
     }
 }
 
 if ($err != '') {
     echo 'ERROR - ' . $err . PHP_EOL;
+	echo '        ' . $cdata . PHP_EOL;
     exit(STATE_UNKNOWN);
 }
 
