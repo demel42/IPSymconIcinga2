@@ -350,136 +350,136 @@ class Icinga2 extends IPSModule
     }
 
     protected function DetermineStatus()
-	{
-		$now = time();
+    {
+        $now = time();
 
-		$startTime = IPS_GetKernelStartTime();
+        $startTime = IPS_GetKernelStartTime();
 
-		$sdata = IPS_GetSnapshot();
-		$udata = utf8_encode($sdata);
-		$snapshot = json_decode($udata, true);
-		$tps = floor($snapshot['timestamp'] / ($now - $startTime) * 100) / 100;
+        $sdata = IPS_GetSnapshot();
+        $udata = utf8_encode($sdata);
+        $snapshot = json_decode($udata, true);
+        $tps = floor($snapshot['timestamp'] / ($now - $startTime) * 100) / 100;
 
-		$version = IPS_GetKernelVersion();
+        $version = IPS_GetKernelVersion();
 
-		$threadList = IPS_GetScriptThreadList();
-		$threadCount = 0;
-		foreach ($threadList as $t => $i) {
-			$thread = IPS_GetScriptThread ($i);
-			$ScriptID = $thread['ScriptID'];
-			if ($ScriptID != 0) {
-				$threadCount++;
-			}
-		}
-		$this->SendDebug(__FUNCTION__, 'threadCount=' . $threadCount, 0);
+        $threadList = IPS_GetScriptThreadList();
+        $threadCount = 0;
+        foreach ($threadList as $t => $i) {
+            $thread = IPS_GetScriptThread($i);
+            $ScriptID = $thread['ScriptID'];
+            if ($ScriptID != 0) {
+                $threadCount++;
+            }
+        }
+        $this->SendDebug(__FUNCTION__, 'threadCount=' . $threadCount, 0);
 
-		$timerCount = 0;
-		$timerList = IPS_GetTimerList();
-		foreach ($timerList as $t) {
-			$timer = IPS_GetTimer($t);
-			if ($timer['NextRun'] > 0) {
-				$timerCount++;
-			}
-		}
-		$this->SendDebug(__FUNCTION__, 'timerCount=' . $timerCount, 0);
+        $timerCount = 0;
+        $timerList = IPS_GetTimerList();
+        foreach ($timerList as $t) {
+            $timer = IPS_GetTimer($t);
+            if ($timer['NextRun'] > 0) {
+                $timerCount++;
+            }
+        }
+        $this->SendDebug(__FUNCTION__, 'timerCount=' . $timerCount, 0);
 
-		$instanceList = IPS_GetInstanceList();
-		$instanceCount = count($instanceList);
-		$instanceError = 0;
-		foreach ($instanceList as $id) {
-			$instance = IPS_GetInstance($id);
-			if ($instance['InstanceStatus'] <= 103) {
-				continue;
-			}
-			$instanceError++;
-		}
-		$this->SendDebug(__FUNCTION__, 'instanceCount=' . $instanceCount . ', instanceError=' . $instanceError, 0);
-			
-		$scriptList = IPS_GetScriptList();
-		$scriptCount = count($scriptList);
-		$scriptError = 0;
-		foreach ($scriptList as $id) {
-			$script = IPS_GetScript($id);
-			if (!$script['ScriptIsBroken']) {
-				continue;
-			}
-			$scriptError++;
-		}
-		$this->SendDebug(__FUNCTION__, 'scriptCount=' . $scriptCount . ', scriptError=' . $scriptError, 0);
+        $instanceList = IPS_GetInstanceList();
+        $instanceCount = count($instanceList);
+        $instanceError = 0;
+        foreach ($instanceList as $id) {
+            $instance = IPS_GetInstance($id);
+            if ($instance['InstanceStatus'] <= 103) {
+                continue;
+            }
+            $instanceError++;
+        }
+        $this->SendDebug(__FUNCTION__, 'instanceCount=' . $instanceCount . ', instanceError=' . $instanceError, 0);
 
-		$linkList = IPS_GetLinkList();
-		$linkCount = count($linkList);
-		$linkError = 0;
-		foreach ($linkList as $id) {
-			$link = IPS_GetLink($id);
-			if (IPS_ObjectExists($link['LinkID'])) {
-				continue;
-			}
-			$linkError++;
-		}
-		$this->SendDebug(__FUNCTION__, 'linkCount=' . $linkCount . ', linkError=' . $linkError, 0);
+        $scriptList = IPS_GetScriptList();
+        $scriptCount = count($scriptList);
+        $scriptError = 0;
+        foreach ($scriptList as $id) {
+            $script = IPS_GetScript($id);
+            if (!$script['ScriptIsBroken']) {
+                continue;
+            }
+            $scriptError++;
+        }
+        $this->SendDebug(__FUNCTION__, 'scriptCount=' . $scriptCount . ', scriptError=' . $scriptError, 0);
 
-		$eventList = IPS_GetEventList();
-		$eventCount = count($eventList);
-		$eventActive = 0;
-		$eventError = 0;
-		foreach ($eventList as $id) {
-			$event = IPS_GetEvent($id);
-			$ok = true;
-			$vid = $event['TriggerVariableID'];
-			if ($event['EventActive']) {
-				$eventActive++;
-			}
-			if ($vid == 0 || IPS_ObjectExists($vid)) {
-				continue;
-			}
-			$eventError++;
-		}
-		$this->SendDebug(__FUNCTION__, 'eventCount=' . $eventCount . ', eventActive=' . $eventActive . ', eventError=' . $eventError, 0);
+        $linkList = IPS_GetLinkList();
+        $linkCount = count($linkList);
+        $linkError = 0;
+        foreach ($linkList as $id) {
+            $link = IPS_GetLink($id);
+            if (IPS_ObjectExists($link['LinkID'])) {
+                continue;
+            }
+            $linkError++;
+        }
+        $this->SendDebug(__FUNCTION__, 'linkCount=' . $linkCount . ', linkError=' . $linkError, 0);
 
-		$moduleList = IPS_GetModuleList();
-		$moduleCount = count($moduleList);
-		$this->SendDebug(__FUNCTION__, 'modulCount=' . $moduleCount, 0);
+        $eventList = IPS_GetEventList();
+        $eventCount = count($eventList);
+        $eventActive = 0;
+        $eventError = 0;
+        foreach ($eventList as $id) {
+            $event = IPS_GetEvent($id);
+            $ok = true;
+            $vid = $event['TriggerVariableID'];
+            if ($event['EventActive']) {
+                $eventActive++;
+            }
+            if ($vid == 0 || IPS_ObjectExists($vid)) {
+                continue;
+            }
+            $eventError++;
+        }
+        $this->SendDebug(__FUNCTION__, 'eventCount=' . $eventCount . ', eventActive=' . $eventActive . ', eventError=' . $eventError, 0);
 
-		$varList = IPS_GetVariableList();
-		$varCount = count($varList);
-		$this->SendDebug(__FUNCTION__, 'varCount=' . $varCount, 0);
+        $moduleList = IPS_GetModuleList();
+        $moduleCount = count($moduleList);
+        $this->SendDebug(__FUNCTION__, 'modulCount=' . $moduleCount, 0);
 
-		$status = 'OK';
+        $varList = IPS_GetVariableList();
+        $varCount = count($varList);
+        $this->SendDebug(__FUNCTION__, 'varCount=' . $varCount, 0);
 
-		$info = 'Version:' . $version . ', start: ' . date('d.m.Y H:i', $startTime);
-		$info .= ', threads: ' . $threadCount;
-		$info .= ', timer: ' . $timerCount;
-		if ($instanceError) {
-			$info .= ', invalid instances: ' . $instanceError;
-			$status = 'WARNING';
-		}
-		if ($linkError) {
-			$info .= ', broken links: ' . $linkError;
-			$status = 'WARNING';
-		}
-		if ($scriptError) {
-			$info .= ', faulty scripts: ' . $scriptError;
-			$status = 'WARNING';
-		}
+        $status = 'OK';
 
-		$perfdata = [];
-		$perfdata['threadCount'] = $threadCount;
-		$perfdata['timerCount'] = $timerCount;
-		$perfdata['tps'] = $tps;
+        $info = 'Version:' . $version . ', start: ' . date('d.m.Y H:i', $startTime);
+        $info .= ', threads: ' . $threadCount;
+        $info .= ', timer: ' . $timerCount;
+        if ($instanceError) {
+            $info .= ', invalid instances: ' . $instanceError;
+            $status = 'WARNING';
+        }
+        if ($linkError) {
+            $info .= ', broken links: ' . $linkError;
+            $status = 'WARNING';
+        }
+        if ($scriptError) {
+            $info .= ', faulty scripts: ' . $scriptError;
+            $status = 'WARNING';
+        }
 
-		$jret = [
-				'status'   => $status,
-				'info'     => $info,
-				'perfdata' => $perfdata,
-			];
-		return json_encode($jret);
-	}
+        $perfdata = [];
+        $perfdata['threadCount'] = $threadCount;
+        $perfdata['timerCount'] = $timerCount;
+        $perfdata['tps'] = $tps;
+
+        $jret = [
+                'status'   => $status,
+                'info'     => $info,
+                'perfdata' => $perfdata,
+            ];
+        return json_encode($jret);
+    }
 
     protected function ProcessHookData()
     {
         $this->SendDebug(__FUNCTION__, '_SERVER=' . print_r($_SERVER, true), 0);
-		$this->SendDebug(__FUNCTION__, '_POST=' . print_r($_POST, true), 0);
+        $this->SendDebug(__FUNCTION__, '_POST=' . print_r($_POST, true), 0);
 
         $root = realpath(__DIR__);
         $uri = $_SERVER['REQUEST_URI'];
@@ -487,37 +487,38 @@ class Icinga2 extends IPSModule
             http_response_code(404);
             die('File not found!');
         }
-		$hook_user = $this->ReadPropertyString('hook_user');
-		$hook_password = $this->ReadPropertyString('hook_password');
-		if ($hook_user != '' || $hook_password != '') {
+        $hook_user = $this->ReadPropertyString('hook_user');
+        $hook_password = $this->ReadPropertyString('hook_password');
+        if ($hook_user != '' || $hook_password != '') {
+            if (!isset($_SERVER['PHP_AUTH_USER'])) {
+                $_SERVER['PHP_AUTH_USER'] = '';
+            }
+            if (!isset($_SERVER['PHP_AUTH_PW'])) {
+                $_SERVER['PHP_AUTH_PW'] = '';
+            }
 
-		if(!isset($_SERVER['PHP_AUTH_USER']))
-			$_SERVER['PHP_AUTH_USER'] = "";
-		if(!isset($_SERVER['PHP_AUTH_PW']))
-			$_SERVER['PHP_AUTH_PW'] = "";
-
-		if(($_SERVER['PHP_AUTH_USER'] != $hook_user) || ($_SERVER['PHP_AUTH_PW'] != $hook_password)) {
-		header('WWW-Authenticate: Basic Realm="Geofency WebHook"');
-		header('HTTP/1.0 401 Unauthorized');
-		echo "Authorization required";
-		return;
-		}
-		}
+            if (($_SERVER['PHP_AUTH_USER'] != $hook_user) || ($_SERVER['PHP_AUTH_PW'] != $hook_password)) {
+                header('WWW-Authenticate: Basic Realm="Geofency WebHook"');
+                header('HTTP/1.0 401 Unauthorized');
+                echo 'Authorization required';
+                return;
+            }
+        }
         if ($uri == '/hook/Icinga2') {
-			$jdata = $_POST;
-			$mode = isset($jdata['mode']) ? $jdata['mode'] :'';
-			$this->SendDebug(__FUNCTION__, 'mode: ' . $mode, 0);
-			switch ($mode) {
-				case 'status':
-					$ret = $this->DetermineStatus();
-					$this->SendDebug(__FUNCTION__, 'ret=' . $ret, 0);
-					echo $ret . PHP_EOL;
-					break;
-				default:
-					http_response_code(404);
-					die('Mode not found!');
-					break;
-			}
+            $jdata = $_POST;
+            $mode = isset($jdata['mode']) ? $jdata['mode'] : '';
+            $this->SendDebug(__FUNCTION__, 'mode: ' . $mode, 0);
+            switch ($mode) {
+                case 'status':
+                    $ret = $this->DetermineStatus();
+                    $this->SendDebug(__FUNCTION__, 'ret=' . $ret, 0);
+                    echo $ret . PHP_EOL;
+                    break;
+                default:
+                    http_response_code(404);
+                    die('Mode not found!');
+                    break;
+            }
             return;
         }
         http_response_code(404);
