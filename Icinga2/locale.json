@@ -26,11 +26,11 @@
 			"started": "gestartet",
 
 			"Boot time": "Startzeitpunkt",
-			"hosts with state: up": "Server mit Status: UP",
-			"hosts with state: down": "Server mit Status: DOWN",
-			"services with state: ok": "Dienst mit Status: OK",
-			"services with state: warning": "Dienst mit Status: WARNING",
-			"services with state: critical": "Dienst mit Status: CRITICAL",
+			"hosts with state UP": "Server mit Status UP",
+			"hosts with state DOWN": "Server mit Status DOWN",
+			"services with state OK": "Dienst mit Status OK",
+			"services with state WARNING": "Dienst mit Status WARNING",
+			"services with state CRITICAL": "Dienst mit Status CRITICAL",
 			"Last update": "letzte Aktualisierung",
 
 			"Verify API-access": "API-Zugriff prüfen",

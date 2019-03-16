@@ -40,13 +40,13 @@ class Icinga2 extends IPSModule
         $this->MaintainVariable('BootTime', $this->Translate('Boot time'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
 
         $vpos = 10;
-        $this->MaintainVariable('HostsUp', $this->Translate('hosts with state: UP'), VARIABLETYPE_INTEGER, '', $vpos++, true);
-        $this->MaintainVariable('HostsDown', $this->Translate('hosts with state: DOWN'), VARIABLETYPE_INTEGER, '', $vpos++, true);
+        $this->MaintainVariable('HostsUp', $this->Translate('hosts with state UP'), VARIABLETYPE_INTEGER, '', $vpos++, true);
+        $this->MaintainVariable('HostsDown', $this->Translate('hosts with state DOWN'), VARIABLETYPE_INTEGER, '', $vpos++, true);
 
         $vpos = 20;
-        $this->MaintainVariable('ServicesOk', $this->Translate('services with state: OK'), VARIABLETYPE_INTEGER, '', $vpos++, true);
-        $this->MaintainVariable('ServicesWarning', $this->Translate('services with state: WARNING'), VARIABLETYPE_INTEGER, '', $vpos++, true);
-        $this->MaintainVariable('ServicesCritical', $this->Translate('services with state: CRITICAL'), VARIABLETYPE_INTEGER, '', $vpos++, true);
+        $this->MaintainVariable('ServicesOk', $this->Translate('services with state OK'), VARIABLETYPE_INTEGER, '', $vpos++, true);
+        $this->MaintainVariable('ServicesWarning', $this->Translate('services with state WARNING'), VARIABLETYPE_INTEGER, '', $vpos++, true);
+        $this->MaintainVariable('ServicesCritical', $this->Translate('services with state CRITICAL'), VARIABLETYPE_INTEGER, '', $vpos++, true);
 
         $vpos = 100;
         $this->MaintainVariable('LastUpdate', $this->Translate('Last update'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
