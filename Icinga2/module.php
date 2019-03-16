@@ -98,10 +98,10 @@ class Icinga2 extends IPSModule
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'hook_user', 'caption' => 'User'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'hook_password', 'caption' => 'Password'];
 
-		$formElements[] = ['type' => 'Label', 'label' => 'script for webhook to use for mode ...'];
-		$formElements[] = ['type' => 'SelectScript', 'name' => 'status_script', 'caption' => ' ... "status"'];
-		$formElements[] = ['type' => 'SelectScript', 'name' => 'action_script', 'caption' => ' ... "action"'];
-		$formElements[] = ['type' => 'SelectScript', 'name' => 'notify_script', 'caption' => ' ... "notify"'];
+        $formElements[] = ['type' => 'Label', 'label' => 'script for webhook to use for mode ...'];
+        $formElements[] = ['type' => 'SelectScript', 'name' => 'status_script', 'caption' => ' ... "status"'];
+        $formElements[] = ['type' => 'SelectScript', 'name' => 'action_script', 'caption' => ' ... "action"'];
+        $formElements[] = ['type' => 'SelectScript', 'name' => 'notify_script', 'caption' => ' ... "notify"'];
 
         $formElements[] = ['type' => 'Label', 'label' => ''];
         $formElements[] = ['type' => 'Label', 'label' => 'Update status every X seconds'];
@@ -360,12 +360,12 @@ class Icinga2 extends IPSModule
 
     protected function DetermineStatus($jdata)
     {
-		$status_script = $this->ReadPropertyInteger('status_script');
-		if ($status_script > 0) {
-			$jdata['InstanceID'] = $this->InstanceID;
-			$ret = IPS_RunScriptWaitEx($status_script, $jdata);
-			return $ret;
-		}
+        $status_script = $this->ReadPropertyInteger('status_script');
+        if ($status_script > 0) {
+            $jdata['InstanceID'] = $this->InstanceID;
+            $ret = IPS_RunScriptWaitEx($status_script, $jdata);
+            return $ret;
+        }
 
         $now = time();
 
@@ -494,27 +494,27 @@ class Icinga2 extends IPSModule
 
     protected function CallAction($jdata)
     {
-		$action_script = $this->ReadPropertyInteger('action_script');
-		if ($action_script > 0) {
-			$jdata['InstanceID'] = $this->InstanceID;
-			$ret = IPS_RunScriptWaitEx($action_script, $jdata);
-			return $ret;
-		}
+        $action_script = $this->ReadPropertyInteger('action_script');
+        if ($action_script > 0) {
+            $jdata['InstanceID'] = $this->InstanceID;
+            $ret = IPS_RunScriptWaitEx($action_script, $jdata);
+            return $ret;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
     protected function SendNotification($jdata)
     {
-		$notify_script = $this->ReadPropertyInteger('notify_script');
-		if ($notify_script > 0) {
-			$jdata['InstanceID'] = $this->InstanceID;
-			$ret = IPS_RunScriptWaitEx($notify_script, $jdata);
-			return $ret;
-		}
+        $notify_script = $this->ReadPropertyInteger('notify_script');
+        if ($notify_script > 0) {
+            $jdata['InstanceID'] = $this->InstanceID;
+            $ret = IPS_RunScriptWaitEx($notify_script, $jdata);
+            return $ret;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
     protected function ProcessHookData()
     {
@@ -549,25 +549,25 @@ class Icinga2 extends IPSModule
             $this->SendDebug(__FUNCTION__, 'mode: ' . $mode, 0);
             switch ($mode) {
                 case 'status':
-					$ret = $this->DetermineStatus($_POST);
+                    $ret = $this->DetermineStatus($_POST);
                     break;
                 case 'notify':
-					$ret = $this->SentNotification($_POST);
+                    $ret = $this->SentNotification($_POST);
                     break;
                 case 'action':
-					$ret = $this->CallAction($_POST);
+                    $ret = $this->CallAction($_POST);
                     break;
                 default:
-					$ret = false;
+                    $ret = false;
                     break;
             }
 
-			if ($ret == false) {
-				http_response_code(404);
-				die('Mode not found!');
-			}
-			$this->SendDebug(__FUNCTION__, 'ret=' . $ret, 0);
-			echo $ret . PHP_EOL;
+            if ($ret == false) {
+                http_response_code(404);
+                die('Mode not found!');
+            }
+            $this->SendDebug(__FUNCTION__, 'ret=' . $ret, 0);
+            echo $ret . PHP_EOL;
             return;
         }
         http_response_code(404);
