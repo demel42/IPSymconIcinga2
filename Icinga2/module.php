@@ -463,19 +463,19 @@ class Icinga2 extends IPSModule
 
         $status = 'OK';
 
-        $info = 'version: ' . $version . ', start: ' . date('d.m.Y H:i', $startTime);
-        $info .= ', threads: ' . $threadCount;
-        $info .= ', timer: ' . $timerCount;
+        $info = 'start=' . date('d.m.Y H:i', $startTime);
+        $info .= ', threads=' . $threadCount;
+        $info .= ', timer=' . $timerCount;
         if ($instanceError) {
-            $info .= ', invalid instances: ' . $instanceError;
+            $info .= ', invalid instances=' . $instanceError;
             $status = 'WARNING';
         }
         if ($linkError) {
-            $info .= ', broken links: ' . $linkError;
+            $info .= ', broken links=' . $linkError;
             $status = 'WARNING';
         }
         if ($scriptError) {
-            $info .= ', faulty scripts: ' . $scriptError;
+            $info .= ', faulty scripts=' . $scriptError;
             $status = 'WARNING';
         }
 
