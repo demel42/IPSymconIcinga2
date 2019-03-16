@@ -19,6 +19,10 @@ class Icinga2 extends IPSModule
         $this->RegisterPropertyString('hook_user', '');
         $this->RegisterPropertyString('hook_password', '');
 
+        $this->RegisterPropertyInteger('status_script', 0);
+        $this->RegisterPropertyInteger('action_script', 0);
+        $this->RegisterPropertyInteger('notify_script', 0);
+
         $this->RegisterPropertyInteger('update_interval', '60');
 
         $this->RegisterTimer('UpdateStatus', 0, 'Icinga2_UpdateStatus(' . $this->InstanceID . ');');
@@ -93,6 +97,11 @@ class Icinga2 extends IPSModule
         $formElements[] = ['type' => 'Label', 'label' => 'Access to webhook'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'hook_user', 'caption' => 'User'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'hook_password', 'caption' => 'Password'];
+
+		$formElements[] = ['type' => 'Label', 'label' => 'script for webhook to use for mode ...'];
+		$formElements[] = ['type' => 'SelectScript', 'name' => 'status_script', 'caption' => ' ... "status"'];
+		$formElements[] = ['type' => 'SelectScript', 'name' => 'action_script', 'caption' => ' ... "action"'];
+		$formElements[] = ['type' => 'SelectScript', 'name' => 'notify_script', 'caption' => ' ... "notify"'];
 
         $formElements[] = ['type' => 'Label', 'label' => ''];
         $formElements[] = ['type' => 'Label', 'label' => 'Update status every X seconds'];
@@ -349,8 +358,15 @@ class Icinga2 extends IPSModule
         return $statuscode;
     }
 
-    protected function DetermineStatus()
+    protected function DetermineStatus($jdata)
     {
+		$status_script = $this->ReadPropertyInteger('status_script');
+		if ($status_script > 0) {
+			$jdata['InstanceID'] = $this->InstanceID;
+			$ret = IPS_RunScriptWaitEx($status_script, $jdata);
+			return $ret;
+		}
+
         $now = time();
 
         $startTime = IPS_GetKernelStartTime();
@@ -388,7 +404,7 @@ class Icinga2 extends IPSModule
         $instanceError = 0;
         foreach ($instanceList as $id) {
             $instance = IPS_GetInstance($id);
-            if ($instance['InstanceStatus'] <= 103) {
+            if ($instance['InstanceStatus'] <= IS_NOTCREATED) {
                 continue;
             }
             $instanceError++;
@@ -447,7 +463,7 @@ class Icinga2 extends IPSModule
 
         $status = 'OK';
 
-        $info = 'Version:' . $version . ', start: ' . date('d.m.Y H:i', $startTime);
+        $info = 'version: ' . $version . ', start: ' . date('d.m.Y H:i', $startTime);
         $info .= ', threads: ' . $threadCount;
         $info .= ', timer: ' . $timerCount;
         if ($instanceError) {
@@ -475,6 +491,30 @@ class Icinga2 extends IPSModule
             ];
         return json_encode($jret);
     }
+
+    protected function CallAction($jdata)
+    {
+		$action_script = $this->ReadPropertyInteger('action_script');
+		if ($action_script > 0) {
+			$jdata['InstanceID'] = $this->InstanceID;
+			$ret = IPS_RunScriptWaitEx($action_script, $jdata);
+			return $ret;
+		}
+
+		return false;
+	}
+
+    protected function SendNotification($jdata)
+    {
+		$notify_script = $this->ReadPropertyInteger('notify_script');
+		if ($notify_script > 0) {
+			$jdata['InstanceID'] = $this->InstanceID;
+			$ret = IPS_RunScriptWaitEx($notify_script, $jdata);
+			return $ret;
+		}
+
+		return false;
+	}
 
     protected function ProcessHookData()
     {
@@ -505,20 +545,29 @@ class Icinga2 extends IPSModule
             }
         }
         if ($uri == '/hook/Icinga2') {
-            $jdata = $_POST;
-            $mode = isset($jdata['mode']) ? $jdata['mode'] : '';
+            $mode = isset($_POST['mode']) ? $_POST['mode'] : '';
             $this->SendDebug(__FUNCTION__, 'mode: ' . $mode, 0);
             switch ($mode) {
                 case 'status':
-                    $ret = $this->DetermineStatus();
-                    $this->SendDebug(__FUNCTION__, 'ret=' . $ret, 0);
-                    echo $ret . PHP_EOL;
+					$ret = $this->DetermineStatus($_POST);
+                    break;
+                case 'notify':
+					$ret = $this->SentNotification($_POST);
+                    break;
+                case 'action':
+					$ret = $this->CallAction($_POST);
                     break;
                 default:
-                    http_response_code(404);
-                    die('Mode not found!');
+					$ret = false;
                     break;
             }
+
+			if ($ret == false) {
+				http_response_code(404);
+				die('Mode not found!');
+			}
+			$this->SendDebug(__FUNCTION__, 'ret=' . $ret, 0);
+			echo $ret . PHP_EOL;
             return;
         }
         http_response_code(404);

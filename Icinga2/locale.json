@@ -7,7 +7,10 @@
 			"User": "Benutzer",
 			"Password": "Passwort",
 			"Access to webhook": "Zugriff auf den WebHook",
-			"Password": "Passwort",
+			"script for webhook to use for mode ...": "Script für WebHook zur Verwendung von mode ...",
+			" ... \"status\"": " ... \"status\"",
+			" ... \"action\"": " ... \"action\"",
+			" ... \"notify\"": " ... \"notify\"",
 			"Update status every X seconds": "Aktualisieren Status alle X Sekunden",
 			"Seconds": "Minutes",
 
