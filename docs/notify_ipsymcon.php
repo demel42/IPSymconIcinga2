@@ -11,8 +11,8 @@ $opts_l = [
 
         'mode:',		// 'host' || 'service'
 
-		'host:',		// host.name
-		'service:',		// service.name
+        'host:',		// host.name
+        'service:',		// service.name
 
         'output:',		// {host,service}.output
         'state:',		// {host,service}.state
