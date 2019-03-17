@@ -9,7 +9,7 @@
 			"Access to webhook": "Zugriff auf den WebHook",
 			"script for webhook to use for ...": "Script für WebHook zur Verwendung als ...",
 			" ... \"check\"": " ... \"check\"",
-			" ... \"action\"": " ... \"action\"",
+			" ... \"event\"": " ... \"event\"",
 			" ... \"notify\"": " ... \"notify\"",
 			"Update status every X seconds": "Aktualisieren Status alle X Sekunden",
 			"Seconds": "Minutes",

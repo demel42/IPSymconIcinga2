@@ -1,11 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-define('STATE_OK', 0);
-define('STATE_WARNING', 1);
-define('STATE_CRITICAL', 2);
-define('STATE_UNKNOWN', 3);
-
 $opts_s = '';
 $opts_l = [
         'ipsymcon_host:',
@@ -13,8 +8,16 @@ $opts_l = [
         'https',
         'webhook_user:',
         'webhook_password:',
-        'mode:',
-        'spec:',
+
+        'mode:',		// 'host' || 'service'
+
+		'user:',		// user.name
+		'type:',		// notification.type
+		'comment:',		// notification.comment
+		
+		'name:',		// host.name
+		'output:',		// host.output
+		'state:',		// host.state
     ];
 
 $options = getopt($opts_s, $opts_l);
@@ -22,7 +25,7 @@ $options = getopt($opts_s, $opts_l);
 $ipsymcon_host = isset($options['ipsymcon_host']) ? $options['ipsymcon_host'] : '';
 if ($ipsymcon_host == '') {
     echo 'UNKNOWN - missing ipsymcon_host' . PHP_EOL;
-    exit(STATE_UNKOWN);
+    exit(-1);
 }
 
 $ipsymcon_port = isset($options['ipsymcon_port']) ? $options['ipsymcon_port'] : 3777;
@@ -33,15 +36,26 @@ $webhook_password = isset($options['webhook_password']) ? $options['webhook_pass
 $mode = isset($options['mode']) ? $options['mode'] : '';
 if ($mode == '') {
     echo 'UNKNOWN - missing mode' . PHP_EOL;
-    exit(STATE_UNKOWN);
+	exit(-1);
 }
 
 $postdata = [];
-$postdata['proc'] = 'check';
+$postdata['proc'] = 'notify';
 $postdata['mode'] = $mode;
-if (isset($options['spec'])) {
-    $postdata['spec'] = $options['spec'];
-}
+
+if (isset($options['user']))
+	$postdata['user'] = $options['user'];
+if (isset($options['type']))
+	$postdata['type'] = $options['type'];
+if (isset($options['comment']))
+	$postdata['comment'] = $options['comment'];
+
+if (isset($options['name']))
+	$postdata['name'] = $options['name'];
+if (isset($options['output']))
+	$postdata['output'] = $options['output'];
+if (isset($options['state']))
+	$postdata['state'] = $options['state'];
 
 $url = (isset($options['https']) && $options['https'] ? 'https' : 'http') . '://' . $ipsymcon_host . ':' . $ipsymcon_port . '/hook/Icinga2';
 
@@ -73,7 +87,7 @@ if ($cerrno) {
     if ($httpcode == 403) {
         $err = 'got http-code ' . $httpcode . ' (forbidden)';
     } elseif ($httpcode >= 500 && $httpcode <= 599) {
-        $err = 'got http-code ' . $httpcode . ' (server error)';
+        $err = 'got http-code ' . $httpcode . ' (ipsymcon_host error)';
     } else {
         $err = "got http-code $httpcode";
     }
@@ -92,42 +106,9 @@ if ($cerrno) {
 if ($err != '') {
     echo 'ERROR - ' . $err . PHP_EOL;
     echo '        ' . $cdata . PHP_EOL;
-    exit(STATE_UNKNOWN);
+    exit(-1);
 }
 
-$status = $jdata['status'];
-switch ($status) {
-    case 'OK':
-        $statuscode = STATE_OK;
-        break;
-    case 'WARNING':
-        $statuscode = STATE_WARNING;
-        break;
-    case 'CRITICAL':
-        $statuscode = STATE_CRITICAL;
-        break;
-    default:
-        $status = 'UNKNOWN';
-        $statuscode = STATE_UNKNOWN;
-        brewk;
-}
+$statuscode = $jdata['status'] == 'OK' ? 0 : -1;
 
-$ret = $status . ' - ';
-
-$info = isset($jdata['info']) ? $jdata['info'] : '';
-$ret .= $info;
-
-$perfdata = isset($jdata['perfdata']) ? $jdata['perfdata'] : '';
-if ($perfdata != '') {
-    $perf = '';
-    foreach ($perfdata as $var => $val) {
-        if ($perf != '') {
-            $perf .= ' ';
-        }
-        $perf .= $var . '=' . $val;
-    }
-    $ret .= ' | ' . $perf;
-}
-
-echo $ret . PHP_EOL;
 exit($statuscode);

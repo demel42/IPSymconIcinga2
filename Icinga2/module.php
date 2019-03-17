@@ -20,7 +20,7 @@ class Icinga2 extends IPSModule
         $this->RegisterPropertyString('hook_password', '');
 
         $this->RegisterPropertyInteger('check_script', 0);
-        $this->RegisterPropertyInteger('action_script', 0);
+        $this->RegisterPropertyInteger('event_script', 0);
         $this->RegisterPropertyInteger('notify_script', 0);
 
         $this->RegisterPropertyInteger('update_interval', '60');
@@ -100,7 +100,7 @@ class Icinga2 extends IPSModule
 
         $formElements[] = ['type' => 'Label', 'label' => 'script for webhook to use for ...'];
         $formElements[] = ['type' => 'SelectScript', 'name' => 'check_script', 'caption' => ' ... "check"'];
-        $formElements[] = ['type' => 'SelectScript', 'name' => 'action_script', 'caption' => ' ... "action"'];
+        $formElements[] = ['type' => 'SelectScript', 'name' => 'event_script', 'caption' => ' ... "event"'];
         $formElements[] = ['type' => 'SelectScript', 'name' => 'notify_script', 'caption' => ' ... "notify"'];
 
         $formElements[] = ['type' => 'Label', 'label' => ''];
@@ -360,10 +360,14 @@ class Icinga2 extends IPSModule
 
     protected function PerformCheck($jdata)
     {
+        $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
+
         $check_script = $this->ReadPropertyInteger('check_script');
         if ($check_script > 0) {
             $jdata['InstanceID'] = $this->InstanceID;
             $ret = IPS_RunScriptWaitEx($check_script, $jdata);
+			$scriptName = IPS_GetName($check_script);
+			$this->SendDebug(__FUNCTION__, 'scripts=' . $scriptName . ', ret=' . print_r($ret, true), 0);
             return $ret;
         }
 
@@ -515,27 +519,38 @@ class Icinga2 extends IPSModule
         return json_encode($jret);
     }
 
-    protected function CallAction($jdata)
+    protected function ProcessEvent($jdata)
     {
-        $action_script = $this->ReadPropertyInteger('action_script');
-        if ($action_script > 0) {
+        $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
+
+        $event_script = $this->ReadPropertyInteger('event_script');
+        if ($event_script > 0) {
             $jdata['InstanceID'] = $this->InstanceID;
-            $ret = IPS_RunScriptWaitEx($action_script, $jdata);
+            $ret = IPS_RunScriptWaitEx($event_script, $jdata);
+			$scriptName = IPS_GetName($event_script);
+			$this->SendDebug(__FUNCTION__, 'scripts=' . $scriptName . ', ret=' . print_r($ret, true), 0);
             return $ret;
         }
 
+		$this->SendDebug(__FUNCTION__, 'missing event_script, abort', 0);
         return false;
     }
 
     protected function SendNotification($jdata)
     {
+        $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
+
         $notify_script = $this->ReadPropertyInteger('notify_script');
+		$this->SendDebug(__FUNCTION__, 'notify_script=' . $notify_script, 0);
         if ($notify_script > 0) {
             $jdata['InstanceID'] = $this->InstanceID;
             $ret = IPS_RunScriptWaitEx($notify_script, $jdata);
+			$scriptName = IPS_GetName($notify_script);
+			$this->SendDebug(__FUNCTION__, 'scripts=' . $scriptName . ', ret=' . print_r($ret, true), 0);
             return $ret;
         }
 
+		$this->SendDebug(__FUNCTION__, 'missing notify_script, abort', 0);
         return false;
     }
 
@@ -575,10 +590,10 @@ class Icinga2 extends IPSModule
                     $ret = $this->PerformCheck($_POST);
                     break;
                 case 'notify':
-                    $ret = $this->SentNotification($_POST);
+                    $ret = $this->SendNotification($_POST);
                     break;
-                case 'action':
-                    $ret = $this->CallAction($_POST);
+                case 'event':
+                    $ret = $this->ProcessEvent($_POST);
                     break;
                 default:
                     $ret = false;
