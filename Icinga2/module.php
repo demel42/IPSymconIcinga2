@@ -242,7 +242,7 @@ class Icinga2 extends IPSModule
             default:
                 $msg .= '  ' . $this->Translate('started') . ': ' . date('d.m.Y H:i', $boot_ts) . PHP_EOL;
                 $msg .= '  ' . $this->Translate('hosts') . ': ' . $s_hosts . PHP_EOL;
-                $msg .= '  ' . $this->Translate('services') . ': ' . $n_services . PHP_EOL;
+                $msg .= '  ' . $this->Translate('services') . ': ' . $s_services . PHP_EOL;
                 break;
         }
 
