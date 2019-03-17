@@ -1,4 +1,4 @@
-# IPSymconOpenWeatherMap
+# IPSymconIcinga2
 
 [![IPS-Version](https://img.shields.io/badge/Symcon_Version-5.0-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 ![Module-Version](https://img.shields.io/badge/Modul_Version-1.0-blue.svg)
