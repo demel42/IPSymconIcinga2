@@ -11,13 +11,13 @@ $opts_l = [
 
         'mode:',		// 'host' || 'service'
 
-		'user:',		// user.name
-		'type:',		// notification.type
-		'comment:',		// notification.comment
-		
-		'name:',		// host.name
-		'output:',		// host.output
-		'state:',		// host.state
+        'user:',		// user.name
+        'type:',		// notification.type
+        'comment:',		// notification.comment
+
+        'name:',		// host.name
+        'output:',		// host.output
+        'state:',		// host.state
     ];
 
 $options = getopt($opts_s, $opts_l);
@@ -36,26 +36,32 @@ $webhook_password = isset($options['webhook_password']) ? $options['webhook_pass
 $mode = isset($options['mode']) ? $options['mode'] : '';
 if ($mode == '') {
     echo 'UNKNOWN - missing mode' . PHP_EOL;
-	exit(-1);
+    exit(-1);
 }
 
 $postdata = [];
 $postdata['proc'] = 'notify';
 $postdata['mode'] = $mode;
 
-if (isset($options['user']))
-	$postdata['user'] = $options['user'];
-if (isset($options['type']))
-	$postdata['type'] = $options['type'];
-if (isset($options['comment']))
-	$postdata['comment'] = $options['comment'];
+if (isset($options['user'])) {
+    $postdata['user'] = $options['user'];
+}
+if (isset($options['type'])) {
+    $postdata['type'] = $options['type'];
+}
+if (isset($options['comment'])) {
+    $postdata['comment'] = $options['comment'];
+}
 
-if (isset($options['name']))
-	$postdata['name'] = $options['name'];
-if (isset($options['output']))
-	$postdata['output'] = $options['output'];
-if (isset($options['state']))
-	$postdata['state'] = $options['state'];
+if (isset($options['name'])) {
+    $postdata['name'] = $options['name'];
+}
+if (isset($options['output'])) {
+    $postdata['output'] = $options['output'];
+}
+if (isset($options['state'])) {
+    $postdata['state'] = $options['state'];
+}
 
 $url = (isset($options['https']) && $options['https'] ? 'https' : 'http') . '://' . $ipsymcon_host . ':' . $ipsymcon_port . '/hook/Icinga2';
 

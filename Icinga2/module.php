@@ -366,8 +366,8 @@ class Icinga2 extends IPSModule
         if ($check_script > 0) {
             $jdata['InstanceID'] = $this->InstanceID;
             $ret = IPS_RunScriptWaitEx($check_script, $jdata);
-			$scriptName = IPS_GetName($check_script);
-			$this->SendDebug(__FUNCTION__, 'scripts=' . $scriptName . ', ret=' . print_r($ret, true), 0);
+            $scriptName = IPS_GetName($check_script);
+            $this->SendDebug(__FUNCTION__, 'scripts=' . $scriptName . ', ret=' . print_r($ret, true), 0);
             return $ret;
         }
 
@@ -527,12 +527,12 @@ class Icinga2 extends IPSModule
         if ($event_script > 0) {
             $jdata['InstanceID'] = $this->InstanceID;
             $ret = IPS_RunScriptWaitEx($event_script, $jdata);
-			$scriptName = IPS_GetName($event_script);
-			$this->SendDebug(__FUNCTION__, 'scripts=' . $scriptName . ', ret=' . print_r($ret, true), 0);
+            $scriptName = IPS_GetName($event_script);
+            $this->SendDebug(__FUNCTION__, 'scripts=' . $scriptName . ', ret=' . print_r($ret, true), 0);
             return $ret;
         }
 
-		$this->SendDebug(__FUNCTION__, 'missing event_script, abort', 0);
+        $this->SendDebug(__FUNCTION__, 'missing event_script, abort', 0);
         return false;
     }
 
@@ -541,16 +541,16 @@ class Icinga2 extends IPSModule
         $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
 
         $notify_script = $this->ReadPropertyInteger('notify_script');
-		$this->SendDebug(__FUNCTION__, 'notify_script=' . $notify_script, 0);
+        $this->SendDebug(__FUNCTION__, 'notify_script=' . $notify_script, 0);
         if ($notify_script > 0) {
             $jdata['InstanceID'] = $this->InstanceID;
             $ret = IPS_RunScriptWaitEx($notify_script, $jdata);
-			$scriptName = IPS_GetName($notify_script);
-			$this->SendDebug(__FUNCTION__, 'scripts=' . $scriptName . ', ret=' . print_r($ret, true), 0);
+            $scriptName = IPS_GetName($notify_script);
+            $this->SendDebug(__FUNCTION__, 'scripts=' . $scriptName . ', ret=' . print_r($ret, true), 0);
             return $ret;
         }
 
-		$this->SendDebug(__FUNCTION__, 'missing notify_script, abort', 0);
+        $this->SendDebug(__FUNCTION__, 'missing notify_script, abort', 0);
         return false;
     }
 
