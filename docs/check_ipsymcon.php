@@ -86,30 +86,29 @@ if ($cerrno) {
 }
 
 if ($err != '') {
-	$status = 'ERROR';
-	$statuscode = STATE_WARNING;
+    $status = 'ERROR';
+    $statuscode = STATE_WARNING;
 
-	$info = $err;
+    $info = $err;
 } else {
-	$status = $jdata['status'];
-	switch ($status) {
-		case 'OK':
-			$statuscode = STATE_OK;
-			break;
-		case 'WARNING':
-			$statuscode = STATE_WARNING;
-			break;
-		case 'CRITICAL':
-			$statuscode = STATE_CRITICAL;
-			break;
-		default:
-			$status = 'UNKNOWN';
-			$statuscode = STATE_UNKNOWN;
-			brewk;
-	}
+    $status = $jdata['status'];
+    switch ($status) {
+        case 'OK':
+            $statuscode = STATE_OK;
+            break;
+        case 'WARNING':
+            $statuscode = STATE_WARNING;
+            break;
+        case 'CRITICAL':
+            $statuscode = STATE_CRITICAL;
+            break;
+        default:
+            $status = 'UNKNOWN';
+            $statuscode = STATE_UNKNOWN;
+            brewk;
+    }
 
-
-	$info = isset($jdata['info']) ? $jdata['info'] : '';
+    $info = isset($jdata['info']) ? $jdata['info'] : '';
 }
 $ret = $status . ' - ' . $info;
 
