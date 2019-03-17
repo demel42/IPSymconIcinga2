@@ -1,6 +1,9 @@
 #!/usr/bin/env php
 <?php
 
+// Für Services: $SERVICESTATE$ , $SERVICESTATETYPE$ , $SERVICEATTEMPT$
+// Für Hosts: $HOSTSTATE$ , $HOSTSTATETYPE$ , $HOSTATTEMPT$
+
 $opts_s = '';
 $opts_l = [
         'ipsymcon_host:',
@@ -9,17 +12,15 @@ $opts_l = [
         'webhook_user:',
         'webhook_password:',
 
-        'mode:',		// 'host' || 'service'
+		'mode:',		// 'host' || 'service'
 
 		'host:',		// host.name
 		'service:',		// service.name
 
-        'output:',		// {host,service}.output
-        'state:',		// {host,service}.state
+		'state:',		// {host,service}.state
+		'type:',		// {host,service}.state_type
+		'attempt:',		// {host,service}.check_attempt
 
-        'user:',		// user.name
-        'type:',		// notification.type
-        'comment:',		// notification.comment
     ];
 
 $options = getopt($opts_s, $opts_l);
@@ -41,9 +42,8 @@ if ($mode == '') {
     exit(-1);
 }
 
-$postdata = [];
 $postdata = $options;
-$postdata['proc'] = 'notify';
+$postdata['proc'] = 'event';
 
 $url = (isset($options['https']) && $options['https'] ? 'https' : 'http') . '://' . $ipsymcon_host . ':' . $ipsymcon_port . '/hook/Icinga2';
 

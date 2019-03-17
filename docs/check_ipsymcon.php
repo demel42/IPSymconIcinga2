@@ -36,12 +36,8 @@ if ($mode == '') {
     exit(STATE_UNKOWN);
 }
 
-$postdata = [];
+$postdata = $options;
 $postdata['proc'] = 'check';
-$postdata['mode'] = $mode;
-if (isset($options['spec'])) {
-    $postdata['spec'] = $options['spec'];
-}
 
 $url = (isset($options['https']) && $options['https'] ? 'https' : 'http') . '://' . $ipsymcon_host . ':' . $ipsymcon_port . '/hook/Icinga2';
 
