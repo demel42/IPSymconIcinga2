@@ -86,32 +86,32 @@ if ($cerrno) {
 }
 
 if ($err != '') {
-    echo 'ERROR - ' . $err . PHP_EOL;
-    echo '        ' . $cdata . PHP_EOL;
-    exit(STATE_UNKNOWN);
+	$status = 'ERROR';
+	$statuscode = STATE_WARNING;
+
+	$info = $err;
+} else {
+	$status = $jdata['status'];
+	switch ($status) {
+		case 'OK':
+			$statuscode = STATE_OK;
+			break;
+		case 'WARNING':
+			$statuscode = STATE_WARNING;
+			break;
+		case 'CRITICAL':
+			$statuscode = STATE_CRITICAL;
+			break;
+		default:
+			$status = 'UNKNOWN';
+			$statuscode = STATE_UNKNOWN;
+			brewk;
+	}
+
+
+	$info = isset($jdata['info']) ? $jdata['info'] : '';
 }
-
-$status = $jdata['status'];
-switch ($status) {
-    case 'OK':
-        $statuscode = STATE_OK;
-        break;
-    case 'WARNING':
-        $statuscode = STATE_WARNING;
-        break;
-    case 'CRITICAL':
-        $statuscode = STATE_CRITICAL;
-        break;
-    default:
-        $status = 'UNKNOWN';
-        $statuscode = STATE_UNKNOWN;
-        brewk;
-}
-
-$ret = $status . ' - ';
-
-$info = isset($jdata['info']) ? $jdata['info'] : '';
-$ret .= $info;
+$ret = $status . ' - ' . $info;
 
 $perfdata = isset($jdata['perfdata']) ? $jdata['perfdata'] : '';
 if ($perfdata != '') {
