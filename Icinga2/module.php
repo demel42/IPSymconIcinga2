@@ -396,7 +396,6 @@ class Icinga2 extends IPSModule
                 $threadCount++;
             }
         }
-        $this->SendDebug(__FUNCTION__, 'threadCount=' . $threadCount, 0);
 
         $timerCount = 0;
         $timerList = IPS_GetTimerList();
@@ -406,7 +405,6 @@ class Icinga2 extends IPSModule
                 $timerCount++;
             }
         }
-        $this->SendDebug(__FUNCTION__, 'timerCount=' . $timerCount, 0);
 
         $instanceList = IPS_GetInstanceList();
         $instanceCount = count($instanceList);
@@ -418,7 +416,6 @@ class Icinga2 extends IPSModule
             }
             $instanceError++;
         }
-        $this->SendDebug(__FUNCTION__, 'instanceCount=' . $instanceCount . ', instanceError=' . $instanceError, 0);
 
         $scriptList = IPS_GetScriptList();
         $scriptCount = count($scriptList);
@@ -430,7 +427,6 @@ class Icinga2 extends IPSModule
             }
             $scriptError++;
         }
-        $this->SendDebug(__FUNCTION__, 'scriptCount=' . $scriptCount . ', scriptError=' . $scriptError, 0);
 
         $linkList = IPS_GetLinkList();
         $linkCount = count($linkList);
@@ -442,7 +438,6 @@ class Icinga2 extends IPSModule
             }
             $linkError++;
         }
-        $this->SendDebug(__FUNCTION__, 'linkCount=' . $linkCount . ', linkError=' . $linkError, 0);
 
         $eventList = IPS_GetEventList();
         $eventCount = count($eventList);
@@ -460,15 +455,23 @@ class Icinga2 extends IPSModule
             }
             $eventError++;
         }
-        $this->SendDebug(__FUNCTION__, 'eventCount=' . $eventCount . ', eventActive=' . $eventActive . ', eventError=' . $eventError, 0);
 
         $moduleList = IPS_GetModuleList();
         $moduleCount = count($moduleList);
-        $this->SendDebug(__FUNCTION__, 'modulCount=' . $moduleCount, 0);
 
         $varList = IPS_GetVariableList();
         $varCount = count($varList);
-        $this->SendDebug(__FUNCTION__, 'varCount=' . $varCount, 0);
+
+        $this->SendDebug(__FUNCTION__, 
+					'threadCount=' . $threadCount . 
+					', timerCount=' . $timerCount .
+					', instanceCount=' . $instanceCount . ', instanceError=' . $instanceError .
+					', scriptCount=' . $scriptCount . ', scriptError=' . $scriptError .
+					', linkCount=' . $linkCount . ', linkError=' . $linkError .
+					', eventCount=' . $eventCount . ', eventActive=' . $eventActive . ', eventError=' . $eventError .
+					', modulCount=' . $moduleCount .
+					', varCount=' . $varCount .
+					'', 0);
 
         $status = 'OK';
 
@@ -611,4 +614,62 @@ class Icinga2 extends IPSModule
         http_response_code(404);
         die('File not found!');
     }
+
+	public function QueryObject(string $obj, string $query)
+	{
+        $data = '';
+        $statuscode = $this->do_HttpRequest('objects/' . $obj, '', json_decode($query), 'POST', $data);
+        if ($statuscode == 0 && isset($data['results'])) {
+			return json_encode($data['results']);
+		}
+		return false;
+	}
+
+	public function Query4Host(string $hosts)
+	{
+		if ($hosts != '') {
+			$h = json_decode($hosts);
+			if ($h == '')
+				$h = array($hosts);
+			$query = [
+					'filter'      => [ 'host.name in hosts' ],
+					'filter_vars' => [ 'hosts' => $h ],
+				];
+			$data = '';
+			$statuscode = $this->do_HttpRequest('objects/hosts', '', $query, 'POST', $data);
+			if ($statuscode == 0 && isset($data['results'])) {
+				return json_encode($data['results']);
+			}
+		}
+		return false;
+	}
+
+	public function Query4Service(string $services, string $hosts)
+	{
+		if ($services != '') {
+			$s = json_decode($services);
+			if ($s == '')
+				$s = array($services);
+			if ($hosts != '') {
+				$h = json_decode($hosts);
+				if ($h == '')
+					$h = array($hosts);
+				$query = [
+						'filter'      => [ 'host.name in hosts && service.name in services' ],
+						'filter_vars' => [ 'hosts' => $h, 'services' => $s ],
+					];
+			} else {
+				$query = [
+						'filter'      => [ 'service.name in services' ],
+						'filter_vars' => [ 'services' => $s ],
+					];
+			}
+			$data = '';
+			$statuscode = $this->do_HttpRequest('objects/services', '', $query, 'POST', $data);
+			if ($statuscode == 0 && isset($data['results'])) {
+				return json_encode($data['results']);
+			}
+		}
+		return false;
+	}
 }
