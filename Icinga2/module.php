@@ -647,32 +647,52 @@ class Icinga2 extends IPSModule
 
     public function Query4Service(string $services, string $hosts)
     {
-        if ($services != '') {
+		if ($services != '') {
             $s = json_decode($services);
             if ($s == '') {
                 $s = [$services];
             }
-            if ($hosts != '') {
-                $h = json_decode($hosts);
-                if ($h == '') {
-                    $h = [$hosts];
-                }
-                $query = [
-                        'filter'      => ['host.name in hosts && service.name in services'],
-                        'filter_vars' => ['hosts' => $h, 'services' => $s],
-                    ];
-            } else {
-                $query = [
-                        'filter'      => ['service.name in services'],
-                        'filter_vars' => ['services' => $s],
-                    ];
-            }
+		} else {
+			$s = '';
+		}
+
+        if ($hosts != '') {
+			$h = json_decode($hosts);
+			if ($h == '') {
+				$h = [$hosts];
+			}
+		} else {
+			$h = '';
+		}
+
+        if ($s != '' && $h != '') {
+			$query = [
+					'joins'       => ['host'],
+					'filter'      => ['host.name in hosts && service.name in services'],
+					'filter_vars' => ['hosts' => $h, 'services' => $s],
+				];
+		} else if ($s != '') {
+			$query = [
+					'joins'       => ['host'],
+					'filter'      => ['service.name in services'],
+					'filter_vars' => ['services' => $s],
+				];
+        } else if ($h != '') {
+			$query = [
+					'joins'       => ['host'],
+					'filter'      => ['host.name in hosts'],
+					'filter_vars' => ['hosts' => $h],
+				];
+		} else {
+			$query = '';
+		}
+		if ($query != '') { 
             $data = '';
             $statuscode = $this->do_HttpRequest('objects/services', '', $query, 'POST', $data);
             if ($statuscode == 0 && isset($data['results'])) {
                 return json_encode($data['results']);
             }
-        }
+		}
         return false;
     }
 }
