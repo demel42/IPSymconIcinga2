@@ -462,16 +462,16 @@ class Icinga2 extends IPSModule
         $varList = IPS_GetVariableList();
         $varCount = count($varList);
 
-        $this->SendDebug(__FUNCTION__, 
-					'threadCount=' . $threadCount . 
-					', timerCount=' . $timerCount .
-					', instanceCount=' . $instanceCount . ', instanceError=' . $instanceError .
-					', scriptCount=' . $scriptCount . ', scriptError=' . $scriptError .
-					', linkCount=' . $linkCount . ', linkError=' . $linkError .
-					', eventCount=' . $eventCount . ', eventActive=' . $eventActive . ', eventError=' . $eventError .
-					', modulCount=' . $moduleCount .
-					', varCount=' . $varCount .
-					'', 0);
+        $this->SendDebug(__FUNCTION__,
+                    'threadCount=' . $threadCount .
+                    ', timerCount=' . $timerCount .
+                    ', instanceCount=' . $instanceCount . ', instanceError=' . $instanceError .
+                    ', scriptCount=' . $scriptCount . ', scriptError=' . $scriptError .
+                    ', linkCount=' . $linkCount . ', linkError=' . $linkError .
+                    ', eventCount=' . $eventCount . ', eventActive=' . $eventActive . ', eventError=' . $eventError .
+                    ', modulCount=' . $moduleCount .
+                    ', varCount=' . $varCount .
+                    '', 0);
 
         $status = 'OK';
 
@@ -615,61 +615,64 @@ class Icinga2 extends IPSModule
         die('File not found!');
     }
 
-	public function QueryObject(string $obj, string $query)
-	{
+    public function QueryObject(string $obj, string $query)
+    {
         $data = '';
         $statuscode = $this->do_HttpRequest('objects/' . $obj, '', json_decode($query), 'POST', $data);
         if ($statuscode == 0 && isset($data['results'])) {
-			return json_encode($data['results']);
-		}
-		return false;
-	}
+            return json_encode($data['results']);
+        }
+        return false;
+    }
 
-	public function Query4Host(string $hosts)
-	{
-		if ($hosts != '') {
-			$h = json_decode($hosts);
-			if ($h == '')
-				$h = array($hosts);
-			$query = [
-					'filter'      => [ 'host.name in hosts' ],
-					'filter_vars' => [ 'hosts' => $h ],
-				];
-			$data = '';
-			$statuscode = $this->do_HttpRequest('objects/hosts', '', $query, 'POST', $data);
-			if ($statuscode == 0 && isset($data['results'])) {
-				return json_encode($data['results']);
-			}
-		}
-		return false;
-	}
+    public function Query4Host(string $hosts)
+    {
+        if ($hosts != '') {
+            $h = json_decode($hosts);
+            if ($h == '') {
+                $h = [$hosts];
+            }
+            $query = [
+                    'filter'      => ['host.name in hosts'],
+                    'filter_vars' => ['hosts' => $h],
+                ];
+            $data = '';
+            $statuscode = $this->do_HttpRequest('objects/hosts', '', $query, 'POST', $data);
+            if ($statuscode == 0 && isset($data['results'])) {
+                return json_encode($data['results']);
+            }
+        }
+        return false;
+    }
 
-	public function Query4Service(string $services, string $hosts)
-	{
-		if ($services != '') {
-			$s = json_decode($services);
-			if ($s == '')
-				$s = array($services);
-			if ($hosts != '') {
-				$h = json_decode($hosts);
-				if ($h == '')
-					$h = array($hosts);
-				$query = [
-						'filter'      => [ 'host.name in hosts && service.name in services' ],
-						'filter_vars' => [ 'hosts' => $h, 'services' => $s ],
-					];
-			} else {
-				$query = [
-						'filter'      => [ 'service.name in services' ],
-						'filter_vars' => [ 'services' => $s ],
-					];
-			}
-			$data = '';
-			$statuscode = $this->do_HttpRequest('objects/services', '', $query, 'POST', $data);
-			if ($statuscode == 0 && isset($data['results'])) {
-				return json_encode($data['results']);
-			}
-		}
-		return false;
-	}
+    public function Query4Service(string $services, string $hosts)
+    {
+        if ($services != '') {
+            $s = json_decode($services);
+            if ($s == '') {
+                $s = [$services];
+            }
+            if ($hosts != '') {
+                $h = json_decode($hosts);
+                if ($h == '') {
+                    $h = [$hosts];
+                }
+                $query = [
+                        'filter'      => ['host.name in hosts && service.name in services'],
+                        'filter_vars' => ['hosts' => $h, 'services' => $s],
+                    ];
+            } else {
+                $query = [
+                        'filter'      => ['service.name in services'],
+                        'filter_vars' => ['services' => $s],
+                    ];
+            }
+            $data = '';
+            $statuscode = $this->do_HttpRequest('objects/services', '', $query, 'POST', $data);
+            if ($statuscode == 0 && isset($data['results'])) {
+                return json_encode($data['results']);
+            }
+        }
+        return false;
+    }
 }
