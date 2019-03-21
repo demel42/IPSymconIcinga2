@@ -415,6 +415,8 @@ class Icinga2 extends IPSModule
                 continue;
             }
             $instanceError++;
+            $loc = IPS_GetLocation($id);
+			$this->SendDebug(__FUNCTION__, 'instance=' . $loc . ', status=' . $instance['InstanceStatus'], 0);
         }
 
         $scriptList = IPS_GetScriptList();
@@ -426,6 +428,8 @@ class Icinga2 extends IPSModule
                 continue;
             }
             $scriptError++;
+            $loc = IPS_GetLocation($id);
+			$this->SendDebug(__FUNCTION__, 'script=' . $loc . ', status=broken', 0);
         }
 
         $linkList = IPS_GetLinkList();
@@ -453,6 +457,8 @@ class Icinga2 extends IPSModule
             if ($vid == 0 || IPS_ObjectExists($vid)) {
                 continue;
             }
+            $loc = IPS_GetLocation($id);
+			$this->SendDebug(__FUNCTION__, 'script=' . $loc . ', status=object missing', 0);
             $eventError++;
         }
 
