@@ -403,17 +403,17 @@ class Icinga2 extends IPSModule
         $timerList = IPS_GetTimerList();
         foreach ($timerList as $t) {
             $timer = IPS_GetTimer($t);
-			$next_run = $timer['NextRun'];
+            $next_run = $timer['NextRun'];
             if ($next_run == 0) {
-				continue;
+                continue;
             }
-			$timerCount++;
-			$delay = $next_run - $now;
+            $timerCount++;
+            $delay = $next_run - $now;
             if ($delay < 60) {
                 $timer1MinCount++;
-			} elseif ($delay < 300) {
+            } elseif ($delay < 300) {
                 $timer5MinCount++;
-			}
+            }
         }
 
         $instanceList = IPS_GetInstanceList();
@@ -421,7 +421,7 @@ class Icinga2 extends IPSModule
         $instanceError = 0;
         foreach ($instanceList as $id) {
             $instance = IPS_GetInstance($id);
-			$instanceStatus = $instance['InstanceStatus'];
+            $instanceStatus = $instance['InstanceStatus'];
             if ($instanceStatus <= IS_NOTCREATED) {
                 continue;
             }
@@ -481,7 +481,7 @@ class Icinga2 extends IPSModule
 
         $this->SendDebug(__FUNCTION__,
                     'threadCount=' . $threadCount .
-                    ', timerCount=' . $timerCount . ' (1m=' . $timer1MinCount . ', 5m=' . $timer5MinCount . ')' . 
+                    ', timerCount=' . $timerCount . ' (1m=' . $timer1MinCount . ', 5m=' . $timer5MinCount . ')' .
                     ', instanceCount=' . $instanceCount . ', instanceError=' . $instanceError .
                     ', scriptCount=' . $scriptCount . ', scriptError=' . $scriptError .
                     ', linkCount=' . $linkCount . ', linkError=' . $linkError .
