@@ -398,12 +398,22 @@ class Icinga2 extends IPSModule
         }
 
         $timerCount = 0;
+        $timer1MinCount = 0;
+        $timer5MinCount = 0;
         $timerList = IPS_GetTimerList();
         foreach ($timerList as $t) {
             $timer = IPS_GetTimer($t);
-            if ($timer['NextRun'] > 0) {
-                $timerCount++;
+			$next_run = $timer['NextRun'];
+            if ($next_run == 0) {
+				continue;
             }
+			$timerCount++;
+			$delay = $next_run - $now;
+            if ($delay < 60) {
+                $timer1MinCount++;
+			} elseif ($delay < 300) {
+                $timer5MinCount++;
+			}
         }
 
         $instanceList = IPS_GetInstanceList();
@@ -411,12 +421,13 @@ class Icinga2 extends IPSModule
         $instanceError = 0;
         foreach ($instanceList as $id) {
             $instance = IPS_GetInstance($id);
-            if ($instance['InstanceStatus'] <= IS_NOTCREATED) {
+			$instanceStatus = $instance['InstanceStatus'];
+            if ($instanceStatus <= IS_NOTCREATED) {
                 continue;
             }
             $instanceError++;
             $loc = IPS_GetLocation($id);
-            $this->SendDebug(__FUNCTION__, 'instance=' . $loc . ', status=' . $instance['InstanceStatus'], 0);
+            $this->SendDebug(__FUNCTION__, 'instance=' . $loc . ', status=' . $instanceStatus, 0);
         }
 
         $scriptList = IPS_GetScriptList();
@@ -450,11 +461,11 @@ class Icinga2 extends IPSModule
         foreach ($eventList as $id) {
             $event = IPS_GetEvent($id);
             $ok = true;
-            $vid = $event['TriggerVariableID'];
+            $varID = $event['TriggerVariableID'];
             if ($event['EventActive']) {
                 $eventActive++;
             }
-            if ($vid == 0 || IPS_ObjectExists($vid)) {
+            if ($varID == 0 || IPS_ObjectExists($varID)) {
                 continue;
             }
             $loc = IPS_GetLocation($id);
@@ -470,7 +481,7 @@ class Icinga2 extends IPSModule
 
         $this->SendDebug(__FUNCTION__,
                     'threadCount=' . $threadCount .
-                    ', timerCount=' . $timerCount .
+                    ', timerCount=' . $timerCount . ' (1m=' . $timer1MinCount . ', 5m=' . $timer5MinCount . ')' . 
                     ', instanceCount=' . $instanceCount . ', instanceError=' . $instanceError .
                     ', scriptCount=' . $scriptCount . ', scriptError=' . $scriptError .
                     ', linkCount=' . $linkCount . ', linkError=' . $linkError .
@@ -503,8 +514,10 @@ class Icinga2 extends IPSModule
 
         $perfdata = [];
         $perfdata['tps'] = $tps;
-        $perfdata['threadCount'] = $threadCount;
-        $perfdata['timerCount'] = $timerCount;
+        $perfdata['threads'] = $threadCount;
+        $perfdata['timer'] = $timerCount;
+        $perfdata['timer_1m'] = $timer1MinCount;
+        $perfdata['timer_5m'] = $timer5MinCount;
 
         /*
         $perfdata['instanceCount'] = $instanceCount;
