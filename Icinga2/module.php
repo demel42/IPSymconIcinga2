@@ -329,7 +329,7 @@ class Icinga2 extends IPSModule
         $err = '';
         $result = '';
         if ($cerrno) {
-            $statuscode = IS_INVALIDDATA;
+            $statuscode = IS_SERVERERROR;
             $err = 'got curl-errno ' . $cerrno . ' (' . $cerror . ')';
         } elseif ($httpcode != 200) {
             if ($httpcode == 403) {
