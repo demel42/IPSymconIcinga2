@@ -44,12 +44,8 @@ Eѕ muss ein entsprechendes Script angeben werden, damit Aktionen durchgeführt 
 
 ### API-Interface
 Ein einfaches Interface zu der Icinga-API ermöglicht es, beliebige Informationen aus Icinga abrufen zu können.
-Das Implementierung beshränkt sich auf die Abfrage von Objekt-Daten.
-Hierüber werden auch zyklisch ein paar Informationen aus Icinga abgeholt und in IP-Symcon dargestellt
-
-Es ist zweifelsohne so, das man viele Tests auch direkt aus IP-Symcon machen kann, aber der Schwerpunkt von IP-Symcon liegt im Bereich der Haussteuerung, der von Icinga im Bereich des Monitoring; hierfür gibt es eine umfangreiche und bewährte Infrastruktur und darauf ausgerichtet Funktionalitäten.
-
-Es gibt standardmässig bei Icinga sehr viele Prüf-Kommandos, auch für spezielle Anwendungen, und eine recht umfangreiche Bibliothek zusätzlicher Kommandos (https://exchange.icinga.com). Es gibt eine dezidierte Funktion um auf Remote-Hosts Prüfungen durchzuführen und gesichert die Informationen und Kommandos zu kommunizieren.
+Das Implementierung beshränkt sich auf die Abfrage von Objekt-Daten, die vielfältigen Möglichkeiten, Icinga durch die API zu konfigurieren und zu steuern sind nicht realisiert.
+Über diese Funktion werden auch zyklisch ein paar Informationen aus Icinga abgeholt und in IP-Symcon dargestellt
 
 ## 2. Voraussetzungen
 
