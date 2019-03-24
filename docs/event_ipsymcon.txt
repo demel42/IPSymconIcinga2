@@ -1,0 +1,127 @@
+*** zones.d/master/commands.conf
+
+object EventCommand "host-event_ipsymcon" {
+    import "plugin-event-command"
+    command = [ "/etc/icinga2/plugins/event_ipsymcon.php" ]
+    arguments += {
+        "--attempt" = {
+            repeat_key = false
+            required = true
+            value = "$host.check_attempt$"
+        }
+        "--host" = {
+            repeat_key = false
+            required = false
+            value = "$host.name$"
+        }
+        "--host_name" = {
+            repeat_key = false
+            required = false
+            value = "$host.display_name$"
+        }
+        "--ipsymcon_host" = {
+            repeat_key = false
+            required = true
+            value = "$ipsymcon_host$"
+        }
+        "--ipsymcon_port" = {
+            repeat_key = false
+            required = false
+            value = "$ipsymcon_port$"
+        }
+        "--mode" = {
+            repeat_key = false
+            required = true
+            value = "host"
+        }
+        "--state" = {
+            repeat_key = false
+            required = true
+            value = "$host.state$"
+        }
+        "--type" = {
+            repeat_key = false
+            required = true
+            value = "$host.state_type$"
+        }
+        "--webhook_password" = {
+            repeat_key = false
+            required = false
+            value = "$webhook_password$"
+        }
+        "--webhook_user" = {
+            repeat_key = false
+            required = false
+            value = "$webhook_user$"
+        }
+    }
+    vars.ipsymcon_host = "<ipsymcon-server>"
+}
+
+object EventCommand "service-event_ipsymcon" {
+    import "plugin-event-command"
+    command = [ "/etc/icinga2/plugins/event_ipsymcon.php" ]
+    arguments += {
+        "--attempt" = {
+            repeat_key = false
+            required = true
+            value = "$service.check_attempt$"
+        }
+        "--host" = {
+            repeat_key = false
+            required = false
+            value = "$host.name$"
+        }
+        "--host_name" = {
+            repeat_key = false
+            required = false
+            value = "$host.display_name$"
+        }
+        "--ipsymcon_host" = {
+            repeat_key = false
+            required = true
+            value = "$ipsymcon_host$"
+        }
+        "--ipsymcon_port" = {
+            repeat_key = false
+            required = false
+            value = "$ipsymcon_port$"
+        }
+        "--mode" = {
+            repeat_key = false
+            required = true
+            value = "service"
+        }
+        "--service" = {
+            repeat_key = false
+            required = false
+            value = "$service.name$"
+        }
+        "--service_name" = {
+            repeat_key = false
+            required = false
+            value = "$service.display_name$"
+        }
+        "--state" = {
+            repeat_key = false
+            required = true
+            value = "$service.state$"
+        }
+        "--type" = {
+            repeat_key = false
+            required = true
+            value = "$service.state_type$"
+        }
+        "--webhook_password" = {
+            repeat_key = false
+            required = false
+            value = "$webhook_password$"
+        }
+        "--webhook_user" = {
+            repeat_key = false
+            required = false
+            value = "$webhook_user$"
+        }
+    }
+    vars.ipsymcon_host = "<ipsymcon-server>"
+}

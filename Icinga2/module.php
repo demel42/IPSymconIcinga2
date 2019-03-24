@@ -10,6 +10,8 @@ class Icinga2 extends IPSModule
     {
         parent::Create();
 
+		$this->RegisterPropertyBoolean('module_disable', false);
+
         $this->RegisterPropertyString('host', '');
         $this->RegisterPropertyInteger('port', 5665);
         $this->RegisterPropertyBoolean('use_https', true);
@@ -34,8 +36,6 @@ class Icinga2 extends IPSModule
     {
         parent::ApplyChanges();
 
-        parent::ApplyChanges();
-
         $vpos = 0;
         $this->MaintainVariable('BootTime', $this->Translate('Boot time'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
 
@@ -50,6 +50,13 @@ class Icinga2 extends IPSModule
 
         $vpos = 100;
         $this->MaintainVariable('LastUpdate', $this->Translate('Last update'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
+		
+		$module_disable = $this->ReadPropertyBoolean('module_disable');
+		if ($module_disable) {
+			$this->SetTimerInterval('UpdateStatus', 0);
+			$this->SetStatus(IS_INACTIVE);
+			return;
+		}
 
         $host = $this->ReadPropertyString('host');
         $port = $this->ReadPropertyInteger('port');
@@ -87,12 +94,13 @@ class Icinga2 extends IPSModule
     public function GetConfigurationForm()
     {
         $formElements = [];
+		$formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Instance is disabled'];
         $formElements[] = ['type' => 'Label', 'label' => 'Icinga2'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'host', 'caption' => 'Host'];
         $formElements[] = ['type' => 'NumberSpinner', 'name' => 'port', 'caption' => 'Port'];
         $formElements[] = ['type' => 'CheckBox', 'name' => 'use_https', 'caption' => 'Use HTTPS'];
-        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'user', 'caption' => 'User'];
-        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'password', 'caption' => 'Password'];
+        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'user', 'caption' => 'API-User'];
+        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'password', 'caption' => 'API-Password'];
 
         $formElements[] = ['type' => 'Label', 'label' => 'Access to webhook'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'hook_user', 'caption' => 'User'];
@@ -135,6 +143,12 @@ class Icinga2 extends IPSModule
 
     public function UpdateStatus()
     {
+		$inst = IPS_GetInstance($this->InstanceID);
+		if ($inst['InstanceStatus'] == IS_INACTIVE) {
+			$this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+			return;
+		}
+
         $data = '';
         $statuscode = $this->do_HttpRequest('status', '', '', 'POST', $data);
         if ($statuscode == 0) {
@@ -175,6 +189,13 @@ class Icinga2 extends IPSModule
 
     public function VerifyAccess()
     {
+		$inst = IPS_GetInstance($this->InstanceID);
+		if ($inst['InstanceStatus'] == IS_INACTIVE) {
+			$this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+			echo $this->translate('Instance is inactive') . PHP_EOL;
+			return;
+		}
+
         $s_hosts = 0;
         $s_services = 0;
         $boot_ts = 0;
@@ -255,6 +276,12 @@ class Icinga2 extends IPSModule
 
     private function do_HttpRequest($cmd, $args, $postdata, $mode, &$result)
     {
+		$inst = IPS_GetInstance($this->InstanceID);
+		if ($inst['InstanceStatus'] == IS_INACTIVE) {
+			$this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+			return;
+		}
+
         $host = $this->ReadPropertyString('host');
         $port = $this->ReadPropertyInteger('port');
         $use_https = $this->ReadPropertyBoolean('use_https');

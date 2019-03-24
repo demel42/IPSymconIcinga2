@@ -1,0 +1,201 @@
+*** zones.d/master/commands.conf
+
+object NotificationCommand "host-notify_ipsymcon" {
+    import "plugin-notification-command"
+    command = [ "/etc/icinga2/plugins/notify_ipsymcon.php" ]
+    arguments += {
+        "--comment" = {
+            repeat_key = false
+            required = false
+            value = "$notification.comment$"
+        }
+        "--host" = {
+            repeat_key = false
+            required = false
+            value = "$host.name$"
+        }
+        "--host_name" = {
+            repeat_key = false
+            required = false
+            value = "$host.display_name$"
+        }
+        "--ipsymcon_host" = {
+            repeat_key = false
+            required = true
+            value = "$ipsymcon_host$"
+        }
+        "--ipsymcon_port" = {
+            repeat_key = false
+            required = false
+            value = "$ipsymcon_port$"
+        }
+        "--mode" = {
+            repeat_key = false
+            required = true
+            value = "host"
+        }
+        "--output" = {
+            repeat_key = false
+            required = false
+            value = "$host.output$"
+        }
+        "--state" = {
+            repeat_key = false
+            required = false
+            value = "$host.state$"
+        }
+        "--type" = {
+            repeat_key = false
+            required = false
+            value = "$notification.type$"
+        }
+        "--user" = {
+            repeat_key = false
+            required = false
+            value = "$user.name$"
+        }
+        "--webhook_password" = {
+            repeat_key = false
+            required = false
+            value = "$webhook_password$"
+        }
+        "--webhook_user" = {
+            repeat_key = false
+            required = false
+            value = "$webhook_user$"
+        }
+    }
+    vars.ipsymcon_host = "___IPSYMCON-SERVER___"
+}
+
+object NotificationCommand "service-notify_ipsymcon" {
+    import "plugin-notification-command"
+    command = [ "/etc/icinga2/plugins/notify_ipsymcon.php" ]
+    arguments += {
+        "--comment" = {
+            repeat_key = false
+            required = false
+            value = "$notification.comment$"
+        }
+        "--host" = {
+            repeat_key = false
+            required = false
+            value = "$host.name$"
+        }
+        "--host_name" = {
+            repeat_key = false
+            required = false
+            value = "$host.display_name$"
+        }
+        "--ipsymcon_host" = {
+            repeat_key = false
+            required = true
+            value = "$ipsymcon_host$"
+        }
+        "--ipsymcon_port" = {
+            repeat_key = false
+            required = false
+            value = "$ipsymcon_port$"
+        }
+        "--mode" = {
+            repeat_key = false
+            required = true
+            value = "service"
+        }
+        "--output" = {
+            repeat_key = false
+            required = false
+            value = "$service.output$"
+        }
+        "--service" = {
+            repeat_key = false
+            required = false
+            value = "$service.name$"
+        }
+        "--service_name" = {
+            repeat_key = false
+            required = false
+            value = "$service.display_name$"
+        }
+        "--state" = {
+            repeat_key = false
+            required = false
+            value = "$service.state$"
+        }
+        "--type" = {
+            repeat_key = false
+            required = false
+            value = "$notification.type$"
+        }
+        "--user" = {
+            repeat_key = false
+            required = false
+            value = "$user.name$"
+        }
+        "--webhook_password" = {
+            repeat_key = false
+            required = false
+            value = "$webhook_password$"
+        }
+        "--webhook_user" = {
+            repeat_key = false
+            required = false
+            value = "$webhook_user$"
+        }
+    }
+    vars.ipsymcon_host = "___IPSYMCON-SERVER___"
+}
+
+*** zones.d/master/notification_templates.conf
+
+template Notification "host-notify_ipsymcon" {
+    command = "host-notify_ipsymcon"
+    period = "7x24"
+    states = [ Down, Up ]
+    types = [ Custom, Problem, Recovery ]
+    user_groups = [ "ipsymcon" ]
+    vars.notification_mode = "host"
+    vars.notify_mode = "host"
+    vars.notify_name = "$host.name$"
+    vars.notify_output = "$host.output$"
+    vars.notify_state = "$host.state$"
+}
+
+template Notification "service-notify_ipsymcon" {
+    command = "service-notify_ipsymcon"
+    period = "7x24"
+    states = [ Critical, OK, Unknown, Warning ]
+    types = [ Custom, Problem, Recovery ]
+    user_groups = [ "ipsymcon" ]
+    vars.notification_mode = "service"
+    vars.notify_mode = "service"
+    vars.notify_name = "$service.name$"
+    vars.notify_output = "$service.output$"
+    vars.notify_state = "$service.state$"
+}
+
+*** zones.d/master/notification_apply.conf
+
+apply Notification "Host (IPS)" to Host {
+    import "host-notify_ipsymcon"
+
+    times = {
+        end = 15m
+    }
+    interval = 1h
+    assign where host.enable_notifications
+    states = [ Down, Up ]
+    user_groups = [ "ipsymcon" ]
+}
+
+apply Notification "Service (IPS)" to Service {
+    import "service-notify_ipsymcon"
+
+    times = {
+        begin = 15m
+    }
+    interval = 1h
+    assign where service.enable_notifications
+    states = [ Critical, OK, Unknown, Warning ]
+    user_groups = [ "ipsymcon" ]
+}

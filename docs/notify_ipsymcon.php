@@ -9,17 +9,19 @@ $opts_l = [
         'webhook_user:',
         'webhook_password:',
 
-        'mode:',		// 'host' || 'service'
+        'mode:',			// 'host' || 'service'
 
-        'host:',		// host.name
-        'service:',		// service.name
+        'host:',			// host.name
+        'host_name:',		// host.display_name
+        'service:',			// service.name
+        'service_name:',	// service.display_name
 
-        'output:',		// {host,service}.output
-        'state:',		// {host,service}.state
+        'output:',			// {host,service}.output
+        'state:',			// {host,service}.state
 
-        'user:',		// user.name
-        'type:',		// notification.type
-        'comment:',		// notification.comment
+        'user:',			// user.name
+        'type:',			// notification.type
+        'comment:',			// notification.comment
     ];
 
 $options = getopt($opts_s, $opts_l);

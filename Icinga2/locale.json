@@ -1,12 +1,17 @@
 {
 	"translations": {
 		"de": {
+			"Instance is disabled": "Instanz ist deaktiviert",
+			"instance is inactive": "Instanz ist inaktiv",
+
 			"Host": "Host",
 			"Port": "Port",
 			"Use HTTPS": "HTTPS verwenden",
+			"API-User": "API-Benutzer",
+			"API-Password": "API-Passwort",
+			"Access to webhook": "Zugriff auf den WebHook",
 			"User": "Benutzer",
 			"Password": "Passwort",
-			"Access to webhook": "Zugriff auf den WebHook",
 			"script for webhook to use for ...": "Script für WebHook zur Verwendung als ...",
 			" ... \"check\"": " ... \"check\"",
 			" ... \"event\"": " ... \"event\"",

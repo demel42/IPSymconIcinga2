@@ -1,0 +1,67 @@
+*** zones.d/master/commands.conf
+
+object CheckCommand "check_ipsymcon" {
+    import "plugin-check-command"
+    command = [ "/etc/icinga2/plugins/check_ipsymcon.php" ]
+    arguments += {
+        "--ipsymcon_host" = {
+            repeat_key = false
+            required = true
+            value = "$host.address$"
+        }
+        "--ipsymcon_port" = {
+            repeat_key = false
+            required = false
+            value = "$ipsymcon_port$"
+        }
+        "--mode" = {
+            repeat_key = false
+            required = true
+            value = "$check_mode$"
+        }
+        "--spec" = {
+            repeat_key = true
+            required = false
+            value = "$check_spec$"
+        }
+        "--webhook_password" = {
+            repeat_key = false
+            required = false
+            value = "$webhook_password$"
+        }
+        "--webhook_user" = {
+            repeat_key = false
+            required = false
+            value = "$webhook_user$"
+        }
+    }
+}
+
+*** zones.d/master/service_templates.conf
+
+template Service "status_ips" {
+    check_command = "check_ipsymcon"
+    max_check_attempts = "1"
+    check_period = "7x24"
+    check_interval = 1m
+    retry_interval = 2m
+    check_timeout = 30s
+    enable_notifications = true
+    enable_active_checks = true
+    enable_passive_checks = false
+    enable_event_handler = true
+    enable_flapping = false
+    enable_perfdata = true
+    event_command = "service-event_ipsymcon"
+    volatile = false
+    command_endpoint = null
+    vars.check_mode = "status"
+}
+
+*** zones.d/master/services.conf
+
+object Service "status_ips" {
+    host_name = "___IPSYMCON-SERVER___"
+    import "status_ips"
+
+}
