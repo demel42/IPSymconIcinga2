@@ -1,6 +1,6 @@
 # IPSymconIcinga2
 
-[![IPS-Version](https://img.shields.io/badge/Symcon_Version-5.0-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
+[![IPS-Version](https://img.shields.io/badge/Symcon_Version-5.0+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 ![Module-Version](https://img.shields.io/badge/Modul_Version-1.0-blue.svg)
 ![Code](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
@@ -30,21 +30,26 @@ Durch die Verwendung eines Docker-Containers (ich habe diesen https://hub.docker
 
 Das Modul erlaubt eine Verbindung mit Icinga2 in beide Richtungen:
 
-### ein Check-Kommando, um von Icinga aus die Funktionsfähighkeit von IP-Symcon zu überprüfen
-es gibt einen Standard-Test, der so eingesetzt, aber mit einem eigenen Script ersetzt werden kann.
+### Check-Command
+єs steht ein Check-Command zur Verfügung, um von Icinga aus die Funktionsfähighkeit von IP-Symcon dezidiert zu überprüfen.
+Es gibt einen Standard-Test, der so eingesetzt, aber auvh durch ein eigenes Script ersetzt werden kann.
 
-### ein Nofitikation-Kommando um Benachrichtigungen von Icinga über IP-Symcon durchzuführen
-man muss ein entsprechendes Script angeben, damit Benachrichtigungen durchgeführt werden, ein Beispiel findet sich im Verzeichnis _docs_.
+### Nofitication-Command
+Es steht ein Nofitication-Command zur Verfügung um Benachrichtigungen von Icinga über IP-Symcon durchführen zu können.
+Es muss ein entsprechendes Script angeben werden, mit Hilfe dessen die  Benachrichtigungen durchgeführt werden, ein Beispiel findet sich im Verzeichnis _docs_.
 
-### eine Event-Kommando, um bei in Icinga erkannten Fehlerzuständen über IP-Symcon Aktionen durchzuführen
-man muss ein entsprechendes Script angeben, damit Aktionen durchgeführt werden, ein Beispiel findet sich im Verzeichnis _docs_.
+### Event-Co,mand
+Ed steht ein Event-Command zur Verfügung, um bei in Icinga erkannten Fehlerzuständen über IP-Symcon Aktionen durchführen zu können.
+Eѕ muss ein entsprechendes Script angeben werden, damit Aktionen durchgeführt werden, ein Beispiel findet sich im Verzeichnis _docs_.
 
-### ein einfaches Interface zu der API, mit dem man beliebige Informationen aus Icinga abrufen kann
-hier[ber werden auch yzklisch ein paar Informationen aus Icinga abgeholt und in IP-Symcon dargestellt
+### API-Interface
+Ein einfaches Interface zu der Icinga-API ermöglicht es, beliebige Informationen aus Icinga abrufen zu können.
+Das Implementierung beshränkt sich auf die Abfrage von Objekt-Daten.
+Hierüber werden auch zyklisch ein paar Informationen aus Icinga abgeholt und in IP-Symcon dargestellt
 
-Es ist zweifelsohne so, das man eigentlich alle Tests auch von IP⁻Symcon aus direkt machen kann, aber der Schwerpunkt von IP-Symcon liegt im Bereich der Hausstuerung, der von Icinga im Bereich des Monitoring; hierfür gibt es eine umfangreiche und bewährte Infrastruktur.
+Es ist zweifelsohne so, das man viele Tests auch direkt aus IP-Symcon machen kann, aber der Schwerpunkt von IP-Symcon liegt im Bereich der Haussteuerung, der von Icinga im Bereich des Monitoring; hierfür gibt es eine umfangreiche und bewährte Infrastruktur und darauf ausgerichtet Funktionalitäten.
 
-Es gibt standardmässig bei Icinga sehr viele Prüf-Kommandos, auch für spezielle Anwendungen und eine recht umfangreiche Bibliothek zusätzlicher Kommandos (https://exchange.icinga.com). Es gibt eine dezidierte Funktion um auf Remote-Hosts Prüfungen durchzuführen und gesichert die Informationen und Kommandos zu kommunizieren.
+Es gibt standardmässig bei Icinga sehr viele Prüf-Kommandos, auch für spezielle Anwendungen, und eine recht umfangreiche Bibliothek zusätzlicher Kommandos (https://exchange.icinga.com). Es gibt eine dezidierte Funktion um auf Remote-Hosts Prüfungen durchzuführen und gesichert die Informationen und Kommandos zu kommunizieren.
 
 ## 2. Voraussetzungen
 
@@ -79,7 +84,7 @@ Für ein Notify- und Event-Scripte liegen dort ebenfalls Beispiele parat ebenso 
 `variant Icinga2_QueryObject(int $InstanzID, string $obj, string $query)`<br>
 Durchführung einer Querry des Bereiches _objects_.
 Daber bezeichnet _obj_ den Unterbereich, z.B. _hosts_ oder _services_.
-Die _query_ muss gemäß der Icinga-API aufgebaut sein…
+Die _query_ muss gemäß der Icinga-API aufgebaut sein.
 
 Das Ergebnis ist eine JSNO-Stuktur.
 
@@ -118,7 +123,7 @@ Das Ergebnis ist eine JSNO-Stuktur.
 | Bezeichnung                  | Beschreibung |
 | :--------------------------: | :-------------------------------------------------------------: |
 | API-Zugriff prüfen           | Zugriff auf die Icinga-API prüfen |
-| Aktualisiere Status          | aktuellen I♣inga-Status holen |
+| Aktualisiere Status          | aktuellen Icinga-Status holen |
 
 ## 6. Anhang
 
