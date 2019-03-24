@@ -10,7 +10,7 @@ class Icinga2 extends IPSModule
     {
         parent::Create();
 
-		$this->RegisterPropertyBoolean('module_disable', false);
+        $this->RegisterPropertyBoolean('module_disable', false);
 
         $this->RegisterPropertyString('host', '');
         $this->RegisterPropertyInteger('port', 5665);
@@ -50,13 +50,13 @@ class Icinga2 extends IPSModule
 
         $vpos = 100;
         $this->MaintainVariable('LastUpdate', $this->Translate('Last update'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
-		
-		$module_disable = $this->ReadPropertyBoolean('module_disable');
-		if ($module_disable) {
-			$this->SetTimerInterval('UpdateStatus', 0);
-			$this->SetStatus(IS_INACTIVE);
-			return;
-		}
+
+        $module_disable = $this->ReadPropertyBoolean('module_disable');
+        if ($module_disable) {
+            $this->SetTimerInterval('UpdateStatus', 0);
+            $this->SetStatus(IS_INACTIVE);
+            return;
+        }
 
         $host = $this->ReadPropertyString('host');
         $port = $this->ReadPropertyInteger('port');
@@ -94,7 +94,7 @@ class Icinga2 extends IPSModule
     public function GetConfigurationForm()
     {
         $formElements = [];
-		$formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Instance is disabled'];
+        $formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Instance is disabled'];
         $formElements[] = ['type' => 'Label', 'label' => 'Icinga2'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'host', 'caption' => 'Host'];
         $formElements[] = ['type' => 'NumberSpinner', 'name' => 'port', 'caption' => 'Port'];
@@ -143,11 +143,11 @@ class Icinga2 extends IPSModule
 
     public function UpdateStatus()
     {
-		$inst = IPS_GetInstance($this->InstanceID);
-		if ($inst['InstanceStatus'] == IS_INACTIVE) {
-			$this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
-			return;
-		}
+        $inst = IPS_GetInstance($this->InstanceID);
+        if ($inst['InstanceStatus'] == IS_INACTIVE) {
+            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+            return;
+        }
 
         $data = '';
         $statuscode = $this->do_HttpRequest('status', '', '', 'POST', $data);
@@ -189,12 +189,12 @@ class Icinga2 extends IPSModule
 
     public function VerifyAccess()
     {
-		$inst = IPS_GetInstance($this->InstanceID);
-		if ($inst['InstanceStatus'] == IS_INACTIVE) {
-			$this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
-			echo $this->translate('Instance is inactive') . PHP_EOL;
-			return;
-		}
+        $inst = IPS_GetInstance($this->InstanceID);
+        if ($inst['InstanceStatus'] == IS_INACTIVE) {
+            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+            echo $this->translate('Instance is inactive') . PHP_EOL;
+            return;
+        }
 
         $s_hosts = 0;
         $s_services = 0;
@@ -276,11 +276,11 @@ class Icinga2 extends IPSModule
 
     private function do_HttpRequest($cmd, $args, $postdata, $mode, &$result)
     {
-		$inst = IPS_GetInstance($this->InstanceID);
-		if ($inst['InstanceStatus'] == IS_INACTIVE) {
-			$this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
-			return;
-		}
+        $inst = IPS_GetInstance($this->InstanceID);
+        if ($inst['InstanceStatus'] == IS_INACTIVE) {
+            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+            return;
+        }
 
         $host = $this->ReadPropertyString('host');
         $port = $this->ReadPropertyInteger('port');
