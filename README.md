@@ -34,8 +34,8 @@ Das Modul erlaubt eine Verbindung mit Icinga2 in beide Richtungen:
 єs steht ein Check-Command zur Verfügung, um von Icinga aus die Funktionsfähighkeit von IP-Symcon dezidiert zu überprüfen.
 Es gibt einen Standard-Test, der so eingesetzt, aber auvh durch ein eigenes Script ersetzt werden kann.
 
-### Nofitication-Command
-Es steht ein Nofitication-Command zur Verfügung um Benachrichtigungen von Icinga über IP-Symcon durchführen zu können.
+### Notification-Command
+Es steht ein Notification-Command zur Verfügung um Benachrichtigungen von Icinga über IP-Symcon durchführen zu können.
 Es muss ein entsprechendes Script angeben werden, mit Hilfe dessen die  Benachrichtigungen durchgeführt werden, ein Beispiel findet sich im Verzeichnis _docs_.
 
 ### Event-Command
