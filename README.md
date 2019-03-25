@@ -39,7 +39,7 @@ Es steht ein Nofitication-Command zur Verfügung um Benachrichtigungen von Icing
 Es muss ein entsprechendes Script angeben werden, mit Hilfe dessen die  Benachrichtigungen durchgeführt werden, ein Beispiel findet sich im Verzeichnis _docs_.
 
 ### Event-Command
-Ed steht ein Event-Command zur Verfügung, um bei in Icinga erkannten Fehlerzuständen über IP-Symcon Aktionen durchführen zu können.
+Es steht ein Event-Command zur Verfügung, um bei in Icinga erkannten Fehlerzuständen über IP-Symcon Aktionen durchführen zu können.
 Eѕ muss ein entsprechendes Script angeben werden, damit Aktionen durchgeführt werden, ein Beispiel findet sich im Verzeichnis _docs_.
 
 ### API-Interface
