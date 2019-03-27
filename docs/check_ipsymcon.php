@@ -22,7 +22,7 @@ $options = getopt($opts_s, $opts_l);
 $ipsymcon_host = isset($options['ipsymcon_host']) ? $options['ipsymcon_host'] : '';
 if ($ipsymcon_host == '') {
     echo 'UNKNOWN - missing ipsymcon_host' . PHP_EOL;
-    exit(STATE_UNKOWN);
+    exit(STATE_UNKNOWN);
 }
 
 $ipsymcon_port = isset($options['ipsymcon_port']) ? $options['ipsymcon_port'] : 3777;
@@ -33,7 +33,7 @@ $webhook_password = isset($options['webhook_password']) ? $options['webhook_pass
 $mode = isset($options['mode']) ? $options['mode'] : '';
 if ($mode == '') {
     echo 'UNKNOWN - missing mode' . PHP_EOL;
-    exit(STATE_UNKOWN);
+    exit(STATE_UNKNOWN);
 }
 
 $postdata = $options;
