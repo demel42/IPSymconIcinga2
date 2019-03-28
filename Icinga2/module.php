@@ -86,8 +86,8 @@ class Icinga2 extends IPSModule
 
     protected function SetUpdateInterval()
     {
-        $min = $this->ReadPropertyInteger('update_interval');
-        $msec = $min > 0 ? $min * 1000 : 0;
+        $sec = $this->ReadPropertyInteger('update_interval');
+        $msec = $sec > 0 ? $sec * 1000 : 0;
         $this->SetTimerInterval('UpdateStatus', $msec);
     }
 
