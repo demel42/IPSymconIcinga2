@@ -102,7 +102,7 @@ Das Ergebnis ist eine JSNO-Stuktur.
 | :-----------------------: | :-----:  | :----------: | :-----------------------------------------: |
 | Instanz ist deaktiviert   | boolean  | false        | Instanz temporär deaktivieren |
 |                           |          |              | |
-| Host                      | string   |              | Icƣnga-Server |
+| Host                      | string   |              | Icinga-Server |
 | Port                      | integer  | 5665         | Icinga-API-Port |
 | HTTPS verwenden           | boolean  | false        | Zugriff auf Icinga per HTTPS |
 | API-Benutzer              | string   |              | Icinga-API-Benutzer |
