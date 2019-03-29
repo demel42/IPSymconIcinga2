@@ -25,7 +25,7 @@ trait Icinga2Common
             return;
         }
 
-		$ret = parent::SetValue($Ident, $Value);
+        $ret = parent::SetValue($Ident, $Value);
         if ($ret == false) {
             $this->SendDebug(__FUNCTION__, 'mismatch of value "' . $Value . '" for variable ' . $Ident, 0);
         }
@@ -39,7 +39,7 @@ trait Icinga2Common
             return false;
         }
 
-		$ret = parent::GetValue($Ident);
+        $ret = parent::GetValue($Ident);
         return $ret;
     }
 
@@ -164,12 +164,12 @@ trait Icinga2Common
 
     private function SetMultiBuffer($name, $value)
     {
-		$this->{'Multi_' . $name} = $value;
+        $this->{'Multi_' . $name} = $value;
     }
 
     private function GetMultiBuffer($name)
     {
-		$value = $this->{'Multi_' . $name};
+        $value = $this->{'Multi_' . $name};
         return $value;
     }
 }
