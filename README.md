@@ -20,7 +20,7 @@
 
 ## 1. Funktionsumfang
 
-Icinga (https://de.wikipedia.org/wiki/Icinga) ist ein System zum überwaxchen von Servern und beliebigen Diensten. Mit der Erweiterung Icinga-Director gibt es ein ein graphisches Frontend, das (fast) die komplette Konfiguration per Browser erlaubt.
+Icinga (https://de.wikipedia.org/wiki/Icinga) ist ein System zur überwachung von Servern und beliebigen Diensten. Mit der Erweiterung Icinga-Director gibt es ein ein graphisches Frontend, das (fast) die komplette Konfiguration per Browser erlaubt.
 Icinga basiert auf einem Fork von Nagios aus 2009, enthät aber inzwischen deutliche Erweiterungen.
 
 Die Dokumentation ist umfangreich (https://icinga.com, https://icinga.com/docs/icinga1/latest/de) und erlaubt, nach einer gewissen Beschäftigung mit Icinga, eine recht einfache Etablierung eines Systems.
