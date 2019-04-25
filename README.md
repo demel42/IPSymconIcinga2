@@ -98,28 +98,28 @@ Das Ergebnis ist eine JSNO-Stuktur.
 
 ### Variablen
 
-| Eigenschaft               | Typ      | Standardwert | Beschreibung |
-| :-----------------------: | :-----:  | :----------: | :-----------------------------------------: |
-| Instanz ist deaktiviert   | boolean  | false        | Instanz temporär deaktivieren |
-|                           |          |              | |
-| Host                      | string   |              | Icinga-Server |
-| Port                      | integer  | 5665         | Icinga-API-Port |
-| HTTPS verwenden           | boolean  | false        | Zugriff auf Icinga per HTTPS |
-| API-Benutzer              | string   |              | Icinga-API-Benutzer |
-| API-Passwort              | string   |              | Passwort des API-Benutzer |
-| Benutzer                  | string   |              | optionale Benutzer zu Zugriff auf den WebHook |
-| Passwort                  | string   |              | Passwort des WebHook-Benutzers |
-| Check-Script              | string   |              | optionales Script für eigene Checks |
-| Notify-Script             | string   |              | Script für die Abarbeitung von Icinga-Benachrichtigungen |
-| Event-Script              | string   |              | Script für die Abarbeitung von Icinga-Ereignissen |
-| Aktualisiere Status ...   | integer  | 60           | Aktualisierungsintervall, Angabe in Sekunden |
+| Eigenschaft             | Typ     | Standardwert | Beschreibung |
+| :---------------------- | :------ | :----------- | :----------- |
+| Instanz ist deaktiviert | boolean | false        | Instanz temporär deaktivieren |
+|                         |         |              | |
+| Host                    | string  |              | Icinga-Server |
+| Port                    | integer | 5665         | Icinga-API-Port |
+| HTTPS verwenden         | boolean | false        | Zugriff auf Icinga per HTTPS |
+| API-Benutzer            | string  |              | Icinga-API-Benutzer |
+| API-Passwort            | string  |              | Passwort des API-Benutzer |
+| Benutzer                | string  |              | optionale Benutzer zu Zugriff auf den WebHook |
+| Passwort                | string  |              | Passwort des WebHook-Benutzers |
+| Check-Script            | string  |              | optionales Script für eigene Checks |
+| Notify-Script           | string  |              | Script für die Abarbeitung von Icinga-Benachrichtigungen |
+| Event-Script            | string  |              | Script für die Abarbeitung von Icinga-Ereignissen |
+| Aktualisiere Status ... | integer | 60           | Aktualisierungsintervall, Angabe in Sekunden |
 
 #### Schaltflächen
 
-| Bezeichnung                  | Beschreibung |
-| :--------------------------: | :-------------------------------------------------------------: |
-| API-Zugriff prüfen           | Zugriff auf die Icinga-API prüfen |
-| Aktualisiere Status          | aktuellen Icinga-Status holen |
+| Bezeichnung         | Beschreibung |
+| :------------------ | :----------- |
+| API-Zugriff prüfen  | Zugriff auf die Icinga-API prüfen |
+| Aktualisiere Status | aktuellen Icinga-Status holen |
 
 ## 6. Anhang
 
