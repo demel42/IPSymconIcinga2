@@ -1,7 +1,7 @@
 # IPSymconIcinga2
 
 [![IPS-Version](https://img.shields.io/badge/Symcon_Version-5.0+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-![Module-Version](https://img.shields.io/badge/Modul_Version-1.2-blue.svg)
+![Module-Version](https://img.shields.io/badge/Modul_Version-1.3-blue.svg)
 ![Code](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![StyleCI](https://github.styleci.io/repos/175371809/shield?branch=master)](https://github.styleci.io/repos/175371809)
@@ -130,6 +130,11 @@ GUIDs
   - Icinga2: `{970F623C-2A4B-4DB3-8C65-786381567D50}`
 
 ## 7. Versions-Historie
+
+- 1.3 @ 26.09.2019 18:24<br>
+  - Anpassungen an IPS 5.2
+    - IPS_SetVariableProfileValues(), IPS_SetVariableProfileDigits() nur bei INTEGER, FLOAT
+    - Dokumentation-URL in module.json
 
 - 1.2 @ 09.08.2019 14:32<br>
   - Schreibfehler korrigiert

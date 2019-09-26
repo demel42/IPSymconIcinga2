@@ -9,5 +9,6 @@
 	"parentRequirements": [],
 	"childRequirements": [],
 	"implemented": [],
-	"prefix": "Icinga2"
+	"prefix": "Icinga2",
+     "url": "https://github.com/demel42/IPSymconIcinga2/blob/master/README.md"
 }

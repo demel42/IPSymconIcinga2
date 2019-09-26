@@ -118,12 +118,14 @@ class Icinga2 extends IPSModule
         $formActions = [];
         $formActions[] = ['type' => 'Button', 'label' => 'Verify API-access', 'onClick' => 'Icinga2_VerifyAccess($id);'];
         $formActions[] = ['type' => 'Button', 'label' => 'Update status', 'onClick' => 'Icinga2_UpdateStatus($id);'];
+        if (IPS_GetKernelVersion() < 5.2) {
         $formActions[] = ['type' => 'Label', 'label' => '____________________________________________________________________________________________________'];
         $formActions[] = [
                             'type'    => 'Button',
                             'caption' => 'Module description',
                             'onClick' => 'echo "https://github.com/demel42/IPSymconIcinga2/blob/master/README.md";'
                         ];
+		}
 
         $formStatus = [];
         $formStatus[] = ['code' => IS_CREATING, 'icon' => 'inactive', 'caption' => 'Instance getting created'];

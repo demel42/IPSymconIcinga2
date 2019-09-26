@@ -1,12 +1,12 @@
 {
 	"id": "{0E497B51-C4F0-4F68-9D98-F7BC3AE07CA3}",
 	"author": "Ch. Damsky",
-	"name": "IPSymconIcinga",
+	"name": "Icinga2",
 	"url": "https://github.com/demel42/IPSymconIcinga",
 	"compatibility": {
 		"version": "5.0"
 	},
-	"version": "1.2",
+	"version": "1.3",
 	"build": 0,
-	"date": 1565353933
+	"date": 1569515041
 }
