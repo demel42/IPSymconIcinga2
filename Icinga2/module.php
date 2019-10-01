@@ -472,6 +472,30 @@ class Icinga2 extends IPSModule
             $this->SendDebug(__FUNCTION__, 'script=' . $loc . ', status=broken', 0);
         }
 
+		$objectList = IPS_GetObjectList();
+		$objectCount = count($objectList);
+		$objectError = 0;
+		foreach ($objectList as $id) {
+			$obj = IPS_GetObject($id);
+			$ok = true;
+			$pid = $obj['ParentID'];
+			if ($pid != 0 && !IPS_ObjectExists($pid)) {
+				$ok = false;
+			}
+			$cids = $obj['ChildrenIDs'];
+			foreach ($cids as $cid) {
+				if (!IPS_ObjectExists($cid)) {
+					$ok = false;
+				}
+			} 
+			if ($ok) {
+				continue;
+			}
+			$objectError++;
+			$loc = IPS_GetLocation($id);
+            $this->SendDebug(__FUNCTION__, 'object=' . $loc . ', status=parent/children missing', 0);
+		}
+
         $linkList = IPS_GetLinkList();
         $linkCount = count($linkList);
         $linkError = 0;
@@ -514,6 +538,7 @@ class Icinga2 extends IPSModule
                     ', instanceCount=' . $instanceCount . ', instanceError=' . $instanceError .
                     ', scriptCount=' . $scriptCount . ', scriptError=' . $scriptError .
                     ', linkCount=' . $linkCount . ', linkError=' . $linkError .
+                    ', objectCount=' . $objectCount . ', objectError=' . $objectError .
                     ', eventCount=' . $eventCount . ', eventActive=' . $eventActive . ', eventError=' . $eventError .
                     ', modulCount=' . $moduleCount .
                     ', varCount=' . $varCount .
@@ -555,6 +580,8 @@ class Icinga2 extends IPSModule
         $perfdata['scriptError'] = $scriptError;
         $perfdata['linkCount'] = $linkCount;
         $perfdata['linkError'] = $linkError;
+        $perfdata['objectCount'] = $objectCount;
+        $perfdata['objectError'] = $objectError;
         $perfdata['eventCount'] = $eventCount;
         $perfdata['eventActive'] = $eventActive;
         $perfdata['eventError'] = $eventError;

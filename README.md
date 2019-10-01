@@ -135,6 +135,7 @@ GUIDs
   - Anpassungen an IPS 5.2
     - IPS_SetVariableProfileValues(), IPS_SetVariableProfileDigits() nur bei INTEGER, FLOAT
     - Dokumentation-URL in module.json
+  - Icinga-Plugin: Überprüfung von Objekten hinzugefügt
 
 - 1.2 @ 09.08.2019 14:32<br>
   - Schreibfehler korrigiert
