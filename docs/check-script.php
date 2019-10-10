@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $scriptName = IPS_GetName($_IPS['SELF']) . '(' . $_IPS['SELF'] . ')';
 
 $instID = $_IPS['InstanceID'];
@@ -63,8 +65,8 @@ $perfdata['timer_1m'] = $timer1MinCount;
 $perfdata['timer_5m'] = $timer5MinCount;
 
 $jret = [
-        'status'   => $status,
-        'info'     => $info,
-        'perfdata' => $perfdata,
-    ];
+    'status'   => $status,
+    'info'     => $info,
+    'perfdata' => $perfdata,
+];
 return json_encode($jret);

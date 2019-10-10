@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
 
 class Icinga2 extends IPSModule
@@ -121,10 +123,10 @@ class Icinga2 extends IPSModule
         if (IPS_GetKernelVersion() < 5.2) {
             $formActions[] = ['type' => 'Label', 'label' => '____________________________________________________________________________________________________'];
             $formActions[] = [
-                            'type'    => 'Button',
-                            'caption' => 'Module description',
-                            'onClick' => 'echo "https://github.com/demel42/IPSymconIcinga2/blob/master/README.md";'
-                        ];
+                'type'    => 'Button',
+                'caption' => 'Module description',
+                'onClick' => 'echo "https://github.com/demel42/IPSymconIcinga2/blob/master/README.md";'
+            ];
         }
 
         $formStatus = [];
@@ -587,13 +589,13 @@ class Icinga2 extends IPSModule
         $perfdata['eventError'] = $eventError;
         $perfdata['moduleCount'] = $moduleCount;
         $perfdata['varCount'] = $varCount;
-        */
+         */
 
         $jret = [
-                'status'   => $status,
-                'info'     => $info,
-                'perfdata' => $perfdata,
-            ];
+            'status'   => $status,
+            'info'     => $info,
+            'perfdata' => $perfdata,
+        ];
         return json_encode($jret);
     }
 
@@ -708,9 +710,9 @@ class Icinga2 extends IPSModule
                 $h = [$hosts];
             }
             $query = [
-                    'filter'      => ['host.name in hosts'],
-                    'filter_vars' => ['hosts' => $h],
-                ];
+                'filter'      => ['host.name in hosts'],
+                'filter_vars' => ['hosts' => $h],
+            ];
             $data = '';
             $statuscode = $this->do_HttpRequest('objects/hosts', '', $query, 'POST', $data);
             if ($statuscode == 0 && isset($data['results'])) {
@@ -742,22 +744,22 @@ class Icinga2 extends IPSModule
 
         if ($s != '' && $h != '') {
             $query = [
-                    'joins'       => ['host'],
-                    'filter'      => ['host.name in hosts && service.name in services'],
-                    'filter_vars' => ['hosts' => $h, 'services' => $s],
-                ];
+                'joins'       => ['host'],
+                'filter'      => ['host.name in hosts && service.name in services'],
+                'filter_vars' => ['hosts' => $h, 'services' => $s],
+            ];
         } elseif ($s != '') {
             $query = [
-                    'joins'       => ['host'],
-                    'filter'      => ['service.name in services'],
-                    'filter_vars' => ['services' => $s],
-                ];
+                'joins'       => ['host'],
+                'filter'      => ['service.name in services'],
+                'filter_vars' => ['services' => $s],
+            ];
         } elseif ($h != '') {
             $query = [
-                    'joins'       => ['host'],
-                    'filter'      => ['host.name in hosts'],
-                    'filter_vars' => ['hosts' => $h],
-                ];
+                'joins'       => ['host'],
+                'filter'      => ['host.name in hosts'],
+                'filter_vars' => ['hosts' => $h],
+            ];
         } else {
             $query = '';
         }

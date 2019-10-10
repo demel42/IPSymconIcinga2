@@ -4,7 +4,6 @@
 ![Module-Version](https://img.shields.io/badge/Modul_Version-1.3-blue.svg)
 ![Code](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
-[![StyleCI](https://github.styleci.io/repos/175371809/shield?branch=master)](https://github.styleci.io/repos/175371809)
 
 ## Dokumentation
 
@@ -131,11 +130,13 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.3 @ 26.09.2019 18:24<br>
+- 1.3 @ 10.10.2019 17:27<br>
   - Anpassungen an IPS 5.2
     - IPS_SetVariableProfileValues(), IPS_SetVariableProfileDigits() nur bei INTEGER, FLOAT
     - Dokumentation-URL in module.json
   - Icinga-Plugin: Überprüfung von Objekten hinzugefügt
+  - Umstellung auf strict_types=1
+  - Umstellung von StyleCI auf php-cs-fixer
 
 - 1.2 @ 09.08.2019 14:32<br>
   - Schreibfehler korrigiert

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once 'util.php';
 
 $scriptName = IPS_GetName($_IPS['SELF']) . '(' . $_IPS['SELF'] . ')';

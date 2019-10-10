@@ -8,14 +8,14 @@ define('STATE_UNKNOWN', 3);
 
 $opts_s = '';
 $opts_l = [
-        'ipsymcon_host:',
-        'ipsymcon_port:',
-        'https',
-        'webhook_user:',
-        'webhook_password:',
-        'mode:',
-        'spec:',
-    ];
+    'ipsymcon_host:',
+    'ipsymcon_port:',
+    'https',
+    'webhook_user:',
+    'webhook_password:',
+    'mode:',
+    'spec:',
+];
 
 $options = getopt($opts_s, $opts_l);
 

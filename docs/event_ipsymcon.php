@@ -6,24 +6,24 @@
 
 $opts_s = '';
 $opts_l = [
-        'ipsymcon_host:',
-        'ipsymcon_port:',
-        'https',
-        'webhook_user:',
-        'webhook_password:',
+    'ipsymcon_host:',
+    'ipsymcon_port:',
+    'https',
+    'webhook_user:',
+    'webhook_password:',
 
-        'mode:',			// 'host' || 'service'
+    'mode:',			// 'host' || 'service'
 
-        'host:',			// host.name
-        'host_name:',		// host.display_name
-        'service:',			// service.name
-        'service_name:',	// service.display_name
+    'host:',			// host.name
+    'host_name:',		// host.display_name
+    'service:',			// service.name
+    'service_name:',	// service.display_name
 
-        'state:',			// {host,service}.state
-        'type:',			// {host,service}.state_type
-        'attempt:',			// {host,service}.check_attempt
+    'state:',			// {host,service}.state
+    'type:',			// {host,service}.state_type
+    'attempt:',			// {host,service}.check_attempt
 
-    ];
+];
 
 $options = getopt($opts_s, $opts_l);
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $r = Icinga2_Query4Host(__ID__ /*[Icinga2]*/, '__HOST-NAME IN ICINGA__');
 if ($r != '') {
     $j = json_decode($r, true);
