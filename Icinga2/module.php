@@ -97,31 +97,31 @@ class Icinga2 extends IPSModule
     {
         $formElements = [];
         $formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Instance is disabled'];
-        $formElements[] = ['type' => 'Label', 'label' => 'Icinga2'];
+        $formElements[] = ['type' => 'Label', 'caption' => 'Icinga2'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'host', 'caption' => 'Host'];
         $formElements[] = ['type' => 'NumberSpinner', 'name' => 'port', 'caption' => 'Port'];
         $formElements[] = ['type' => 'CheckBox', 'name' => 'use_https', 'caption' => 'Use HTTPS'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'user', 'caption' => 'API-User'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'password', 'caption' => 'API-Password'];
 
-        $formElements[] = ['type' => 'Label', 'label' => 'Access to webhook'];
+        $formElements[] = ['type' => 'Label', 'caption' => 'Access to webhook'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'hook_user', 'caption' => 'User'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'hook_password', 'caption' => 'Password'];
 
-        $formElements[] = ['type' => 'Label', 'label' => 'script for webhook to use for ...'];
+        $formElements[] = ['type' => 'Label', 'caption' => 'script for webhook to use for ...'];
         $formElements[] = ['type' => 'SelectScript', 'name' => 'check_script', 'caption' => ' ... "check"'];
         $formElements[] = ['type' => 'SelectScript', 'name' => 'event_script', 'caption' => ' ... "event"'];
         $formElements[] = ['type' => 'SelectScript', 'name' => 'notify_script', 'caption' => ' ... "notify"'];
 
-        $formElements[] = ['type' => 'Label', 'label' => ''];
-        $formElements[] = ['type' => 'Label', 'label' => 'Update status every X seconds'];
+        $formElements[] = ['type' => 'Label', 'caption' => ''];
+        $formElements[] = ['type' => 'Label', 'caption' => 'Update status every X seconds'];
         $formElements[] = ['type' => 'NumberSpinner', 'name' => 'update_interval', 'caption' => 'Seconds'];
 
         $formActions = [];
-        $formActions[] = ['type' => 'Button', 'label' => 'Verify API-access', 'onClick' => 'Icinga2_VerifyAccess($id);'];
-        $formActions[] = ['type' => 'Button', 'label' => 'Update status', 'onClick' => 'Icinga2_UpdateStatus($id);'];
+        $formActions[] = ['type' => 'Button', 'caption' => 'Verify API-access', 'onClick' => 'Icinga2_VerifyAccess($id);'];
+        $formActions[] = ['type' => 'Button', 'caption' => 'Update status', 'onClick' => 'Icinga2_UpdateStatus($id);'];
         if (IPS_GetKernelVersion() < 5.2) {
-            $formActions[] = ['type' => 'Label', 'label' => '____________________________________________________________________________________________________'];
+            $formActions[] = ['type' => 'Label', 'caption' => '____________________________________________________________________________________________________'];
             $formActions[] = [
                 'type'    => 'Button',
                 'caption' => 'Module description',

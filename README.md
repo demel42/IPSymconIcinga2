@@ -1,7 +1,7 @@
 # IPSymconIcinga2
 
 [![IPS-Version](https://img.shields.io/badge/Symcon_Version-5.0+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-![Module-Version](https://img.shields.io/badge/Modul_Version-1.3-blue.svg)
+![Module-Version](https://img.shields.io/badge/Modul_Version-1.4-blue.svg)
 ![Code](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
@@ -130,7 +130,11 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.3 @ 10.10.2019 17:27<br>
+- 1.4 @ 19.12.2019 14:09
+  - Anpassungen an IPS 5.3
+    - Formular-Elemente: 'label' in 'caption' geändert
+
+- 1.3 @ 10.10.2019 17:27
   - Anpassungen an IPS 5.2
     - IPS_SetVariableProfileValues(), IPS_SetVariableProfileDigits() nur bei INTEGER, FLOAT
     - Dokumentation-URL in module.json
@@ -138,11 +142,11 @@ GUIDs
   - Umstellung auf strict_types=1
   - Umstellung von StyleCI auf php-cs-fixer
 
-- 1.2 @ 09.08.2019 14:32<br>
+- 1.2 @ 09.08.2019 14:32
   - Schreibfehler korrigiert
 
-- 1.1 @ 29.03.2019 16:19<br>
+- 1.1 @ 29.03.2019 16:19
   - SetValue() abgesichert
 
-- 1.0 @ 13.03.2019 08:22<br>
-  Initiale Version
+- 1.0 @ 13.03.2019 08:22
+  - Initiale Version
