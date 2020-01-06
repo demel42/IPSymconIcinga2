@@ -66,15 +66,27 @@ class Icinga2 extends IPSModule
         $password = $this->ReadPropertyString('password');
         if ($host == '' || $port == 0 || $user == '' || $password == '') {
             $this->SetStatus(IS_INVALIDCONFIG);
-        } else {
-            $this->SetStatus(IS_ACTIVE);
+            return;
+        }
+
+        $refs = $this->GetReferenceList();
+        foreach ($refs as $ref) {
+            $this->UnregisterReference($ref);
+        }
+        $propertyNames = ['check_script', 'event_script', 'notify_script'];
+        foreach ($propertyNames as $name) {
+            $oid = $this->ReadPropertyInteger($name);
+            if ($oid > 0) {
+                $this->RegisterReference($oid);
+            }
         }
 
         if (IPS_GetKernelRunlevel() == KR_READY) {
             $this->RegisterHook('/hook/Icinga2');
+            $this->SetUpdateInterval();
         }
 
-        $this->SetUpdateInterval();
+        $this->SetStatus(IS_ACTIVE);
     }
 
     public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
@@ -83,6 +95,7 @@ class Icinga2 extends IPSModule
 
         if ($Message == IPS_KERNELMESSAGE && $Data[0] == KR_READY) {
             $this->RegisterHook('/hook/Icinga2');
+            $this->SetUpdateInterval();
         }
     }
 

@@ -130,6 +130,10 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.5 @ 06.01.2020 11:17
+  - Nutzung von RegisterReference() für im Modul genutze Objekte (Scripte, Kategorien etc)
+  - SetTimerInterval() erst nach KR_READY
+
 - 1.4 @ 01.01.2020 18:52
   - Anpassungen an IPS 5.3
     - Formular-Elemente: 'label' in 'caption' geändert
