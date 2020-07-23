@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
+require_once __DIR__ . '/../libs/local.php';   // lokale Funktionen
 
 class Icinga2 extends IPSModule
 {
-    use Icinga2Common;
+    use Icinga2CommonLib;
+    use Icinga2LocalLib;
 
     public function Create()
     {
@@ -65,7 +67,7 @@ class Icinga2 extends IPSModule
         $user = $this->ReadPropertyString('user');
         $password = $this->ReadPropertyString('password');
         if ($host == '' || $port == 0 || $user == '' || $password == '') {
-            $this->SetStatus(IS_INVALIDCONFIG);
+            $this->SetStatus(self::$IS_INVALIDCONFIG);
             return;
         }
 
@@ -108,46 +110,127 @@ class Icinga2 extends IPSModule
 
     public function GetConfigurationForm()
     {
+        $formElements = $this->GetFormElements();
+        $formActions = $this->GetFormActions();
+        $formStatus = $this->GetFormStatus();
+
+        $form = json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
+        if ($form == '') {
+            $this->SendDebug(__FUNCTION__, 'json_error=' . json_last_error_msg(), 0);
+            $this->SendDebug(__FUNCTION__, '=> formElements=' . print_r($formElements, true), 0);
+            $this->SendDebug(__FUNCTION__, '=> formActions=' . print_r($formActions, true), 0);
+            $this->SendDebug(__FUNCTION__, '=> formStatus=' . print_r($formStatus, true), 0);
+        }
+        return $form;
+    }
+
+    private function GetFormElements()
+    {
         $formElements = [];
-        $formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Instance is disabled'];
-        $formElements[] = ['type' => 'Label', 'caption' => 'Icinga2'];
-        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'host', 'caption' => 'Host'];
-        $formElements[] = ['type' => 'NumberSpinner', 'name' => 'port', 'caption' => 'Port'];
-        $formElements[] = ['type' => 'CheckBox', 'name' => 'use_https', 'caption' => 'Use HTTPS'];
-        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'user', 'caption' => 'API-User'];
-        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'password', 'caption' => 'API-Password'];
 
-        $formElements[] = ['type' => 'Label', 'caption' => 'Access to webhook'];
-        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'hook_user', 'caption' => 'User'];
-        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'hook_password', 'caption' => 'Password'];
+        $formElements[] = [
+            'type'    => 'CheckBox',
+            'name'    => 'module_disable',
+            'caption' => 'Instance is disabled'
+        ];
+        $formElements[] = [
+            'type'    => 'Label',
+            'caption' => 'Icinga2'
+        ];
+        $formElements[] = [
+            'type'    => 'ValidationTextBox',
+            'name'    => 'host',
+            'caption' => 'Host'
+        ];
+        $formElements[] = [
+            'type'    => 'NumberSpinner',
+            'name'    => 'port',
+            'caption' => 'Port'
+        ];
+        $formElements[] = [
+            'type'    => 'CheckBox',
+            'name'    => 'use_https',
+            'caption' => 'Use HTTPS'
+        ];
+        $formElements[] = [
+            'type'    => 'ValidationTextBox',
+            'name'    => 'user',
+            'caption' => 'API-User'
+        ];
+        $formElements[] = [
+            'type'    => 'ValidationTextBox',
+            'name'    => 'password',
+            'caption' => 'API-Password'
+        ];
 
-        $formElements[] = ['type' => 'Label', 'caption' => 'script for webhook to use for ...'];
-        $formElements[] = ['type' => 'SelectScript', 'name' => 'check_script', 'caption' => ' ... "check"'];
-        $formElements[] = ['type' => 'SelectScript', 'name' => 'event_script', 'caption' => ' ... "event"'];
-        $formElements[] = ['type' => 'SelectScript', 'name' => 'notify_script', 'caption' => ' ... "notify"'];
+        $formElements[] = [
+            'type'    => 'Label',
+            'caption' => 'Access to webhook'
+        ];
+        $formElements[] = [
+            'type'    => 'ValidationTextBox',
+            'name'    => 'hook_user',
+            'caption' => 'User'
+        ];
+        $formElements[] = [
+            'type'    => 'ValidationTextBox',
+            'name'    => 'hook_password',
+            'caption' => 'Password'
+        ];
 
-        $formElements[] = ['type' => 'Label', 'caption' => ''];
-        $formElements[] = ['type' => 'Label', 'caption' => 'Update status every X seconds'];
-        $formElements[] = ['type' => 'NumberSpinner', 'name' => 'update_interval', 'caption' => 'Seconds'];
+        $formElements[] = [
+            'type'    => 'Label',
+            'caption' => 'script for webhook to use for ...'
+        ];
+        $formElements[] = [
+            'type'    => 'SelectScript',
+            'name'    => 'check_script',
+            'caption' => ' ... "check"'
+        ];
+        $formElements[] = [
+            'type'    => 'SelectScript',
+            'name'    => 'event_script',
+            'caption' => ' ... "event"'
+        ];
+        $formElements[] = [
+            'type'    => 'SelectScript',
+            'name'    => 'notify_script',
+            'caption' => ' ... "notify"'
+        ];
 
+        $formElements[] = [
+            'type'    => 'Label',
+            'caption' => ''
+        ];
+        $formElements[] = [
+            'type'    => 'Label',
+            'caption' => 'Update status every X seconds'
+        ];
+        $formElements[] = [
+            'type'    => 'NumberSpinner',
+            'name'    => 'update_interval',
+            'caption' => 'Seconds'
+        ];
+
+        return $formElements;
+    }
+
+    private function GetFormActions()
+    {
         $formActions = [];
-        $formActions[] = ['type' => 'Button', 'caption' => 'Verify API-access', 'onClick' => 'Icinga2_VerifyAccess($id);'];
-        $formActions[] = ['type' => 'Button', 'caption' => 'Update status', 'onClick' => 'Icinga2_UpdateStatus($id);'];
 
-        $formStatus = [];
-        $formStatus[] = ['code' => IS_CREATING, 'icon' => 'inactive', 'caption' => 'Instance getting created'];
-        $formStatus[] = ['code' => IS_ACTIVE, 'icon' => 'active', 'caption' => 'Instance is active'];
-        $formStatus[] = ['code' => IS_DELETING, 'icon' => 'inactive', 'caption' => 'Instance is deleted'];
-        $formStatus[] = ['code' => IS_INACTIVE, 'icon' => 'inactive', 'caption' => 'Instance is inactive'];
-        $formStatus[] = ['code' => IS_NOTCREATED, 'icon' => 'inactive', 'caption' => 'Instance is not created'];
+        $formActions[] = [
+            'type'    => 'Button',
+            'caption' => 'Verify API-access',
+            'onClick' => 'Icinga2_VerifyAccess($id);'
+        ];
+        $formActions[] = [
+            'type'    => 'Button',
+            'caption' => 'Update status',
+            'onClick' => 'Icinga2_UpdateStatus($id);'
+        ];
 
-        $formStatus[] = ['code' => IS_INVALIDCONFIG, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid configuration)'];
-        $formStatus[] = ['code' => IS_FORBIDDEN, 'icon' => 'error', 'caption' => 'Instance is inactive (access forbidden)'];
-        $formStatus[] = ['code' => IS_SERVERERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (server error)'];
-        $formStatus[] = ['code' => IS_HTTPERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (http error)'];
-        $formStatus[] = ['code' => IS_INVALIDDATA, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid data)'];
-
-        return json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
+        return $formActions;
     }
 
     public function UpdateStatus()
@@ -189,7 +272,7 @@ class Icinga2 extends IPSModule
                     break;
                 }
             } else {
-                $statuscode = IS_INVALIDDATA;
+                $statuscode = self::$IS_INVALIDDATA;
             }
         }
 
@@ -239,11 +322,11 @@ class Icinga2 extends IPSModule
                         $s_services .= ', ' . $n_services_critical . ' crit';
                     }
 
-                    $boot_ts = time() - $status['uptime'];
+                    $boot_ts = time() - (int) $status['uptime'];
                     break;
                 }
             } else {
-                $statuscode = IS_INVALIDDATA;
+                $statuscode = self::$IS_INVALIDDATA;
             }
         }
 
@@ -254,19 +337,19 @@ class Icinga2 extends IPSModule
             $msg = $this->Translate('access ok') . ':' . PHP_EOL;
         }
         switch ($statuscode) {
-            case IS_INVALIDCONFIG:
+            case self::$IS_INVALIDCONFIG:
                 $msg .= $this->Translate('invalid configuration');
                 break;
-            case IS_FORBIDDEN:
+            case self::$IS_FORBIDDEN:
                 $msg .= $this->Translate('access forbidden');
                 break;
-            case IS_SERVERERROR:
+            case self::$IS_SERVERERROR:
                 $msg .= $this->Translate('server error');
                 break;
-            case IS_HTTPERROR:
+            case self::$IS_HTTPERROR:
                 $msg .= $this->Translate('http error');
                 break;
-            case IS_INVALIDDATA:
+            case self::$IS_INVALIDDATA:
                 $msg .= $this->Translate('invalid data');
                 break;
             default:
@@ -365,23 +448,23 @@ class Icinga2 extends IPSModule
         $err = '';
         $result = '';
         if ($cerrno) {
-            $statuscode = IS_SERVERERROR;
+            $statuscode = self::$IS_SERVERERROR;
             $err = 'got curl-errno ' . $cerrno . ' (' . $cerror . ')';
         } elseif ($httpcode != 200) {
             if ($httpcode == 403) {
-                $statuscode = IS_FORBIDDEN;
+                $statuscode = self::$IS_FORBIDDEN;
                 $err = 'got http-code ' . $httpcode . ' (forbidden)';
             } elseif ($httpcode >= 500 && $httpcode <= 599) {
-                $statuscode = IS_SERVERERROR;
+                $statuscode = self::$IS_SERVERERROR;
                 $err = 'got http-code ' . $httpcode . ' (server error)';
             } else {
-                $statuscode = IS_HTTPERROR;
+                $statuscode = self::$IS_HTTPERROR;
                 $err = "got http-code $httpcode";
             }
         } else {
             $result = json_decode($cdata, true);
             if ($result == '') {
-                $statuscode = IS_INVALIDDATA;
+                $statuscode = self::$IS_INVALIDDATA;
                 $err = 'malformed response';
             }
         }

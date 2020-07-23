@@ -2,22 +2,7 @@
 
 declare(strict_types=1);
 
-if (!defined('VARIABLETYPE_BOOLEAN')) {
-    define('VARIABLETYPE_BOOLEAN', 0);
-    define('VARIABLETYPE_INTEGER', 1);
-    define('VARIABLETYPE_FLOAT', 2);
-    define('VARIABLETYPE_STRING', 3);
-}
-
-if (!defined('IS_INVALIDCONFIG')) {
-    define('IS_INVALIDCONFIG', IS_EBASE + 1);
-    define('IS_FORBIDDEN', IS_EBASE + 2);
-    define('IS_SERVERERROR', IS_EBASE + 3);
-    define('IS_HTTPERROR', IS_EBASE + 4);
-    define('IS_INVALIDDATA', IS_EBASE + 5);
-}
-
-trait Icinga2Common
+trait Icinga2CommonLib
 {
     protected function SetValue($Ident, $Value)
     {

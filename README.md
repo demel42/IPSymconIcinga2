@@ -129,8 +129,13 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.6 @ 13.07.2020 14:56
+- 1.6 @ 23.07.2020 12:11 (beta)
+  - Nacharbeit zu 'strict_types=1'
   - LICENSE.md hinzugefügt
+  - lokale Funktionen aus common.php in locale.php verlagert
+  - Traits des Moduls haben nun Postfix "Lib"
+  - GetConfigurationForm() überarbeitet
+  - define's durch statische Klassen-Variablen ersetzt
 
 - 1.5 @ 06.01.2020 11:17
   - Nutzung von RegisterReference() für im Modul genutze Objekte (Scripte, Kategorien etc)
