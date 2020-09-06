@@ -129,7 +129,7 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.6 @ 23.07.2020 12:11 (beta)
+- 1.6 @ 23.07.2020 12:11
   - Nacharbeit zu 'strict_types=1'
   - LICENSE.md hinzugefügt
   - lokale Funktionen aus common.php in locale.php verlagert
