@@ -497,12 +497,56 @@ class Icinga2 extends IPSModule
 
         $now = time();
 
-        $startTime = IPS_GetKernelStartTime();
+        $counter = false;
+        $d = $this->GetBuffer('snapshot');
+        $this->SendDebug(__FUNCTION__, 'GetBuffer(snapshot)=' . $d, 0);
+        if ($d != false) {
+            $j = json_decode($d, true);
+            if ($j != false) {
+                $counter = $j['counter'];
+                $tstamp = $j['tstamp'];
+            }
+        }
+        if ($counter == false) {
+            $r = IPS_GetSnapshotChanges(0);
+            $snapshot = json_decode($r, true);
+            $counter = $snapshot[0]['TimeStamp'];
+            $mps = 0;
+            $ups = 0;
+            $lps = 0;
+        } else {
+            $r = IPS_GetSnapshotChanges($counter);
+            $snapshot = json_decode($r, true);
+            $n_messages = count($snapshot);
+            $n_updates = 0;
+            $n_logs = 0;
+            foreach ($snapshot as $obj) {
+                $id = $obj['Message'];
+                $base_n = floor($id / 100) * 100;
+                switch ($base_n) {
+                    case IPS_LOGMESSAGE:
+                        $n_logs++;
+                        break;
+                    case IPS_VARIABLEMESSAGE:
+                        $n_updates++;
+                        break;
+                }
+            }
+            $counter = $snapshot[$n_messages - 1]['TimeStamp'];
+            $dif = $now - $tstamp;
+            $mps = floor($n_messages / $dif * 100) / 100;
+            $ups = floor($n_updates / $dif * 100) / 100;
+            $lps = floor($n_logs / $dif * 100) / 100;
+        }
+        $j = [
+            'counter'=> $counter,
+            'tstamp' => $now
+        ];
+        $d = json_encode($j);
+        $this->SetBuffer('snapshot', $d);
+        $this->SendDebug(__FUNCTION__, 'SetBuffer(snapshot)=' . $d, 0);
 
-        $sdata = IPS_GetSnapshot();
-        $udata = utf8_encode($sdata);
-        $snapshot = json_decode($udata, true);
-        $tps = floor($snapshot['timestamp'] / ($now - $startTime) * 100) / 100;
+        $startTime = IPS_GetKernelStartTime();
 
         $version = IPS_GetKernelVersion();
 
@@ -632,6 +676,9 @@ class Icinga2 extends IPSModule
                     ', eventCount=' . $eventCount . ', eventActive=' . $eventActive . ', eventError=' . $eventError .
                     ', modulCount=' . $moduleCount .
                     ', varCount=' . $varCount .
+                    ', messagesCount=' . $n_messages . ', messages/s=' . $mps .
+                    ', updatesCount=' . $n_updates . ', updates/s=' . $ups .
+                    ', logsCount=' . $n_logs . ', logs/s=' . $lps .
                     '', 0);
 
         $status = 'OK';
@@ -655,13 +702,18 @@ class Icinga2 extends IPSModule
             $info .= ', invalid events=' . $eventError;
             $status = 'WARNING';
         }
+        $info .= ', messages/s=' . $mps;
+        $info .= ', updates/s=' . $ups;
+        $info .= ', logs/s=' . $lps;
 
         $perfdata = [];
-        $perfdata['tps'] = $tps;
         $perfdata['threads'] = $threadCount;
         $perfdata['timer'] = $timerCount;
         $perfdata['timer_1m'] = $timer1MinCount;
         $perfdata['timer_5m'] = $timer5MinCount;
+        $perfdata['mps'] = $mps;
+        $perfdata['ups'] = $ups;
+        $perfdata['lps'] = $lps;
 
         /*
         $perfdata['instanceCount'] = $instanceCount;

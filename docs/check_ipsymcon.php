@@ -105,7 +105,7 @@ if ($err != '') {
         default:
             $status = 'UNKNOWN';
             $statuscode = STATE_UNKNOWN;
-            brewk;
+            break;
     }
 
     $info = isset($jdata['info']) ? $jdata['info'] : '';
