@@ -129,7 +129,7 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.7 @ 12.07.2021 14:13 (beta)
+- 1.7 @ 12.07.2021 14:13
   - PHP_CS_FIXER_IGNORE_ENV=1 in github/workflows/style.yml eingefügt
   - Berecnung des TPS ersetzt durch MPS (messages/sec), UPS (variable-updates/sec), LPS (logmessages/sec)
 
