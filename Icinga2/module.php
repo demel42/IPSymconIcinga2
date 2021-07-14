@@ -131,7 +131,7 @@ class Icinga2 extends IPSModule
         $formElements[] = [
             'type'    => 'CheckBox',
             'name'    => 'module_disable',
-            'caption' => 'Instance is disabled'
+            'caption' => 'Disable instance'
         ];
         $formElements[] = [
             'type'    => 'Label',
@@ -516,6 +516,20 @@ class Icinga2 extends IPSModule
             $lps = 0;
         } else {
             $r = IPS_GetSnapshotChanges($counter);
+            if ($r == false) {
+                $this->SendDebug(__FUNCTION__, 'unable to get snapshot (#' . $counter . '), resetting', 0);
+                $this->LogMessage('unable to get snapshot (#' . $counter . '), resetting', KL_NOTIFY);
+                $this->SetBuffer('snapshot', '');
+                $r = IPS_GetSnapshotChanges(0);
+                $snapshot = json_decode($r, true);
+                $counter = $snapshot[0]['TimeStamp'];
+                $r = IPS_GetSnapshotChanges($counter);
+                if ($r == false) {
+                    $this->SendDebug(__FUNCTION__, 'unable to get snapshot (#' . $counter . '), reset failed', 0);
+                    $this->LogMessage('unable to get snapshot (#' . $counter . '), reset failed', KL_NOTIFY);
+                    return;
+                }
+            }
             $snapshot = json_decode($r, true);
             $n_messages = count($snapshot);
             $n_updates = 0;

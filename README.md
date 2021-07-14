@@ -129,6 +129,10 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.8 @ 14.07.2021 18:01
+  - IPS_GetSnapshotChanges() abgesichert
+  - Schalter "Instanz ist deaktiviert" umbenannt in "Instanz deaktivieren"
+
 - 1.7 @ 12.07.2021 14:13
   - PHP_CS_FIXER_IGNORE_ENV=1 in github/workflows/style.yml eingefügt
   - Berecnung des TPS ersetzt durch MPS (messages/sec), UPS (variable-updates/sec), LPS (logmessages/sec)
