@@ -98,7 +98,7 @@ Das Ergebnis ist eine JSNO-Stuktur.
 
 | Eigenschaft             | Typ     | Standardwert | Beschreibung |
 | :---------------------- | :------ | :----------- | :----------- |
-| Instanz ist deaktiviert | boolean | false        | Instanz temporär deaktivieren |
+| Instanz deaktivieren    | boolean | false        | Instanz temporär deaktivieren |
 |                         |         |              | |
 | Host                    | string  |              | Icinga-Server |
 | Port                    | integer | 5665         | Icinga-API-Port |
