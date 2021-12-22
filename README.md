@@ -129,6 +129,10 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.9 @ 22.12.2021 14:48
+  - weitere Absicherung von IPS_GetSnapshotChanges()
+  - Anzeige von Modul/Bibliotheks-Informationen
+
 - 1.8 @ 14.07.2021 18:01
   - IPS_GetSnapshotChanges() abgesichert
   - Schalter "Instanz ist deaktiviert" umbenannt in "Instanz deaktivieren"

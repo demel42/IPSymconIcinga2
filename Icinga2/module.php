@@ -108,22 +108,6 @@ class Icinga2 extends IPSModule
         $this->SetTimerInterval('UpdateStatus', $msec);
     }
 
-    public function GetConfigurationForm()
-    {
-        $formElements = $this->GetFormElements();
-        $formActions = $this->GetFormActions();
-        $formStatus = $this->GetFormStatus();
-
-        $form = json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
-        if ($form == '') {
-            $this->SendDebug(__FUNCTION__, 'json_error=' . json_last_error_msg(), 0);
-            $this->SendDebug(__FUNCTION__, '=> formElements=' . print_r($formElements, true), 0);
-            $this->SendDebug(__FUNCTION__, '=> formActions=' . print_r($formActions, true), 0);
-            $this->SendDebug(__FUNCTION__, '=> formStatus=' . print_r($formStatus, true), 0);
-        }
-        return $form;
-    }
-
     private function GetFormElements()
     {
         $formElements = [];
@@ -224,10 +208,22 @@ class Icinga2 extends IPSModule
             'caption' => 'Verify API-access',
             'onClick' => 'Icinga2_VerifyAccess($id);'
         ];
+
         $formActions[] = [
             'type'    => 'Button',
             'caption' => 'Update status',
             'onClick' => 'Icinga2_UpdateStatus($id);'
+        ];
+
+        $formActions[] = [
+            'type'    => 'ExpansionPanel',
+            'caption' => 'Information',
+            'items'   => [
+                [
+                    'type'    => 'Label',
+                    'caption' => $this->InstanceInfo($this->InstanceID),
+                ],
+            ],
         ];
 
         return $formActions;
@@ -511,11 +507,14 @@ class Icinga2 extends IPSModule
             $r = IPS_GetSnapshotChanges(0);
             $snapshot = json_decode($r, true);
             $counter = $snapshot[0]['TimeStamp'];
+            $n_messages = 0;
+            $n_updates = 0;
+            $n_logs = 0;
             $mps = 0;
             $ups = 0;
             $lps = 0;
         } else {
-            $r = IPS_GetSnapshotChanges($counter);
+            @$r = IPS_GetSnapshotChanges($counter);
             if ($r == false) {
                 $this->SendDebug(__FUNCTION__, 'unable to get snapshot (#' . $counter . '), resetting', 0);
                 $this->LogMessage('unable to get snapshot (#' . $counter . '), resetting', KL_NOTIFY);
@@ -523,7 +522,7 @@ class Icinga2 extends IPSModule
                 $r = IPS_GetSnapshotChanges(0);
                 $snapshot = json_decode($r, true);
                 $counter = $snapshot[0]['TimeStamp'];
-                $r = IPS_GetSnapshotChanges($counter);
+                @$r = IPS_GetSnapshotChanges($counter);
                 if ($r == false) {
                     $this->SendDebug(__FUNCTION__, 'unable to get snapshot (#' . $counter . '), reset failed', 0);
                     $this->LogMessage('unable to get snapshot (#' . $counter . '), reset failed', KL_NOTIFY);
