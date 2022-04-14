@@ -7,7 +7,7 @@ require_once __DIR__ . '/../libs/local.php';   // lokale Funktionen
 
 class Icinga2 extends IPSModule
 {
-    use Icinga2CommonLib;
+    use Icinga2\StubsCommonLib;
     use Icinga2LocalLib;
 
     public function Create()
@@ -22,6 +22,7 @@ class Icinga2 extends IPSModule
         $this->RegisterPropertyString('user', 'icinga2-director');
         $this->RegisterPropertyString('password', '');
 
+        $this->RegisterPropertyString('hook', '/hook/Icinga2');
         $this->RegisterPropertyString('hook_user', '');
         $this->RegisterPropertyString('hook_password', '');
 
@@ -33,7 +34,47 @@ class Icinga2 extends IPSModule
 
         $this->RegisterTimer('UpdateStatus', 0, 'Icinga2_UpdateStatus(' . $this->InstanceID . ');');
 
+        $this->InstallVarProfiles(false);
+
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
+    }
+
+    private function CheckConfiguration()
+    {
+        $s = '';
+        $r = [];
+
+        $host = $this->ReadPropertyString('host');
+        if ($host == '') {
+            $this->SendDebug(__FUNCTION__, '"host" is needed', 0);
+            $r[] = $this->Translate('Host must be specified');
+        }
+        $user = $this->ReadPropertyString('user');
+        if ($user == '') {
+            $this->SendDebug(__FUNCTION__, '"user" is needed', 0);
+            $r[] = $this->Translate('Username must be specified');
+        }
+
+        $password = $this->ReadPropertyString('password');
+        if ($password == '') {
+            $this->SendDebug(__FUNCTION__, '"password" is needed', 0);
+            $r[] = $this->Translate('Password must be specified');
+        }
+
+        $hook = $this->ReadPropertyString('hook');
+        if ($hook != '' && $this->HookIsUsed($hook)) {
+            $this->SendDebug(__FUNCTION__, '"hook" is already used', 0);
+            $r[] = $this->Translate('Webhook is already used');
+        }
+
+        if ($r != []) {
+            $s = $this->Translate('The following points of the configuration are incorrect') . ':' . PHP_EOL;
+            foreach ($r as $p) {
+                $s .= '- ' . $p . PHP_EOL;
+            }
+        }
+
+        return $s;
     }
 
     public function ApplyChanges()
@@ -55,22 +96,6 @@ class Icinga2 extends IPSModule
         $vpos = 100;
         $this->MaintainVariable('LastUpdate', $this->Translate('Last update'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
 
-        $module_disable = $this->ReadPropertyBoolean('module_disable');
-        if ($module_disable) {
-            $this->SetTimerInterval('UpdateStatus', 0);
-            $this->SetStatus(IS_INACTIVE);
-            return;
-        }
-
-        $host = $this->ReadPropertyString('host');
-        $port = $this->ReadPropertyInteger('port');
-        $user = $this->ReadPropertyString('user');
-        $password = $this->ReadPropertyString('password');
-        if ($host == '' || $port == 0 || $user == '' || $password == '') {
-            $this->SetStatus(self::$IS_INVALIDCONFIG);
-            return;
-        }
-
         $refs = $this->GetReferenceList();
         foreach ($refs as $ref) {
             $this->UnregisterReference($ref);
@@ -78,13 +103,29 @@ class Icinga2 extends IPSModule
         $propertyNames = ['check_script', 'event_script', 'notify_script'];
         foreach ($propertyNames as $name) {
             $oid = $this->ReadPropertyInteger($name);
-            if ($oid > 0) {
+            if ($oid >= 10000) {
                 $this->RegisterReference($oid);
             }
         }
 
+        $module_disable = $this->ReadPropertyBoolean('module_disable');
+        if ($module_disable) {
+            $this->SetTimerInterval('UpdateStatus', 0);
+            $this->SetStatus(IS_INACTIVE);
+            return;
+        }
+
+        if ($this->CheckConfiguration() != false) {
+            $this->SetTimerInterval('UpdateStatus', 0);
+            $this->SetStatus(self::$IS_INVALIDCONFIG);
+            return;
+        }
+
         if (IPS_GetKernelRunlevel() == KR_READY) {
-            $this->RegisterHook('/hook/Icinga2');
+            $hook = $this->ReadPropertyString('hook');
+            if ($hook != '') {
+                $this->RegisterHook($hook);
+            }
             $this->SetUpdateInterval();
         }
 
@@ -96,7 +137,10 @@ class Icinga2 extends IPSModule
         parent::MessageSink($TimeStamp, $SenderID, $Message, $Data);
 
         if ($Message == IPS_KERNELMESSAGE && $Data[0] == KR_READY) {
-            $this->RegisterHook('/hook/Icinga2');
+            $hook = $this->ReadPropertyString('hook');
+            if ($hook != '') {
+                $this->RegisterHook($hook);
+            }
             $this->SetUpdateInterval();
         }
     }
@@ -113,87 +157,105 @@ class Icinga2 extends IPSModule
         $formElements = [];
 
         $formElements[] = [
+            'type'    => 'Label',
+            'caption' => 'Icinga2'
+        ];
+
+        @$s = $this->CheckConfiguration();
+        if ($s != '') {
+            $formElements[] = [
+                'type'    => 'Label',
+                'caption' => $s,
+            ];
+            $formElements[] = [
+                'type'    => 'Label',
+            ];
+        }
+
+        $formElements[] = [
             'type'    => 'CheckBox',
             'name'    => 'module_disable',
             'caption' => 'Disable instance'
         ];
+
         $formElements[] = [
-            'type'    => 'Label',
-            'caption' => 'Icinga2'
-        ];
-        $formElements[] = [
-            'type'    => 'ValidationTextBox',
-            'name'    => 'host',
-            'caption' => 'Host'
-        ];
-        $formElements[] = [
-            'type'    => 'NumberSpinner',
-            'name'    => 'port',
-            'caption' => 'Port'
-        ];
-        $formElements[] = [
-            'type'    => 'CheckBox',
-            'name'    => 'use_https',
-            'caption' => 'Use HTTPS'
-        ];
-        $formElements[] = [
-            'type'    => 'ValidationTextBox',
-            'name'    => 'user',
-            'caption' => 'API-User'
-        ];
-        $formElements[] = [
-            'type'    => 'ValidationTextBox',
-            'name'    => 'password',
-            'caption' => 'API-Password'
+            'type'    => 'ExpansionPanel',
+            'items'   => [
+                [
+                    'type'    => 'ValidationTextBox',
+                    'name'    => 'host',
+                    'caption' => 'Host'
+                ],
+                [
+                    'type'    => 'NumberSpinner',
+                    'name'    => 'port',
+                    'caption' => 'Port'
+                ],
+                [
+                    'type'    => 'CheckBox',
+                    'name'    => 'use_https',
+                    'caption' => 'Use HTTPS'
+                ],
+                [
+                    'type'    => 'ValidationTextBox',
+                    'name'    => 'user',
+                    'caption' => 'API-User'
+                ],
+                [
+                    'type'    => 'ValidationTextBox',
+                    'name'    => 'password',
+                    'caption' => 'API-Password'
+                ],
+            ],
+            'caption' => 'Access configuration',
         ];
 
         $formElements[] = [
-            'type'    => 'Label',
-            'caption' => 'Access to webhook'
-        ];
-        $formElements[] = [
-            'type'    => 'ValidationTextBox',
-            'name'    => 'hook_user',
-            'caption' => 'User'
-        ];
-        $formElements[] = [
-            'type'    => 'ValidationTextBox',
-            'name'    => 'hook_password',
-            'caption' => 'Password'
+            'type'    => 'ExpansionPanel',
+            'items'   => [
+                [
+                    'type'    => 'Label',
+                    'caption' => 'Access to webhook'
+                ],
+                [
+                    'type'    => 'ValidationTextBox',
+                    'name'    => 'hook_user',
+                    'caption' => 'User'
+                ],
+                [
+                    'type'    => 'ValidationTextBox',
+                    'name'    => 'hook_password',
+                    'caption' => 'Password'
+                ],
+                [
+                    'type'    => 'Label',
+                    'caption' => 'script for webhook to use for ...'
+                ],
+                [
+                    'type'    => 'SelectScript',
+                    'name'    => 'check_script',
+                    'caption' => ' ... "check"'
+                ],
+                [
+                    'type'    => 'SelectScript',
+                    'name'    => 'event_script',
+                    'caption' => ' ... "event"'
+                ],
+                [
+                    'type'    => 'SelectScript',
+                    'name'    => 'notify_script',
+                    'caption' => ' ... "notify"'
+                ],
+            ],
+            'caption' => 'Webhook',
         ];
 
-        $formElements[] = [
-            'type'    => 'Label',
-            'caption' => 'script for webhook to use for ...'
-        ];
-        $formElements[] = [
-            'type'    => 'SelectScript',
-            'name'    => 'check_script',
-            'caption' => ' ... "check"'
-        ];
-        $formElements[] = [
-            'type'    => 'SelectScript',
-            'name'    => 'event_script',
-            'caption' => ' ... "event"'
-        ];
-        $formElements[] = [
-            'type'    => 'SelectScript',
-            'name'    => 'notify_script',
-            'caption' => ' ... "notify"'
-        ];
-
-        $formElements[] = [
-            'type'    => 'Label',
-            'caption' => ''
-        ];
-        $formElements[] = [
-            'type'    => 'Label',
-            'caption' => 'Update status every X seconds'
-        ];
         $formElements[] = [
             'type'    => 'NumberSpinner',
             'name'    => 'update_interval',
-            'caption' => 'Seconds'
+            'caption' => 'Update interval',
+            'minimum' => 0,
+            'suffix'  => 'Seconds'
         ];
 
         return $formElements;
@@ -215,25 +277,28 @@ class Icinga2 extends IPSModule
             'onClick' => 'Icinga2_UpdateStatus($id);'
         ];
 
-        $formActions[] = [
-            'type'    => 'ExpansionPanel',
-            'caption' => 'Information',
-            'items'   => [
-                [
-                    'type'    => 'Label',
-                    'caption' => $this->InstanceInfo($this->InstanceID),
-                ],
-            ],
-        ];
+        $formActions[] = $this->GetInformationForm();
+        $formActions[] = $this->GetReferencesForm();
 
         return $formActions;
     }
 
+    public function RequestAction($ident, $value)
+    {
+        if ($this->CommonRequestAction($ident, $value)) {
+            return;
+        }
+        switch ($ident) {
+            default:
+                $this->SendDebug(__FUNCTION__, 'invalid ident ' . $ident, 0);
+                break;
+        }
+    }
+
     public function UpdateStatus()
     {
-        $inst = IPS_GetInstance($this->InstanceID);
-        if ($inst['InstanceStatus'] == IS_INACTIVE) {
-            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+        if ($this->CheckStatus() == self::$STATUS_INVALID) {
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
             return;
         }
 
@@ -277,10 +342,9 @@ class Icinga2 extends IPSModule
 
     public function VerifyAccess()
     {
-        $inst = IPS_GetInstance($this->InstanceID);
-        if ($inst['InstanceStatus'] == IS_INACTIVE) {
-            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
-            echo $this->translate('Instance is inactive') . PHP_EOL;
+        if ($this->CheckStatus() == self::$STATUS_INVALID) {
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
+            echo $this->GetStatusText() . PHP_EOL;
             return;
         }
 
@@ -364,9 +428,8 @@ class Icinga2 extends IPSModule
 
     private function do_HttpRequest($cmd, $args, $postdata, $mode, &$result)
     {
-        $inst = IPS_GetInstance($this->InstanceID);
-        if ($inst['InstanceStatus'] == IS_INACTIVE) {
-            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+        if ($this->CheckStatus() == self::$STATUS_INVALID) {
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
             return;
         }
 
@@ -478,7 +541,7 @@ class Icinga2 extends IPSModule
         $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
 
         $check_script = $this->ReadPropertyInteger('check_script');
-        if ($check_script > 0) {
+        if ($check_script >= 10000) {
             $jdata['InstanceID'] = $this->InstanceID;
             $ret = IPS_RunScriptWaitEx($check_script, $jdata);
             $scriptName = IPS_GetName($check_script);
@@ -679,8 +742,9 @@ class Icinga2 extends IPSModule
         $varList = IPS_GetVariableList();
         $varCount = count($varList);
 
-        $this->SendDebug(__FUNCTION__,
-                    'threadCount=' . $threadCount .
+        $this->SendDebug(
+            __FUNCTION__,
+            'threadCount=' . $threadCount .
                     ', timerCount=' . $timerCount . ' (1m=' . $timer1MinCount . ', 5m=' . $timer5MinCount . ')' .
                     ', instanceCount=' . $instanceCount . ', instanceError=' . $instanceError .
                     ', scriptCount=' . $scriptCount . ', scriptError=' . $scriptError .
@@ -692,7 +756,9 @@ class Icinga2 extends IPSModule
                     ', messagesCount=' . $n_messages . ', messages/s=' . $mps .
                     ', updatesCount=' . $n_updates . ', updates/s=' . $ups .
                     ', logsCount=' . $n_logs . ', logs/s=' . $lps .
-                    '', 0);
+                    '',
+            0
+        );
 
         $status = 'OK';
 
@@ -757,7 +823,7 @@ class Icinga2 extends IPSModule
         $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
 
         $event_script = $this->ReadPropertyInteger('event_script');
-        if ($event_script > 0) {
+        if ($event_script >= 10000) {
             $jdata['InstanceID'] = $this->InstanceID;
             $ret = IPS_RunScriptWaitEx($event_script, $jdata);
             $scriptName = IPS_GetName($event_script);
@@ -775,7 +841,7 @@ class Icinga2 extends IPSModule
 
         $notify_script = $this->ReadPropertyInteger('notify_script');
         $this->SendDebug(__FUNCTION__, 'notify_script=' . $notify_script, 0);
-        if ($notify_script > 0) {
+        if ($notify_script >= 10000) {
             $jdata['InstanceID'] = $this->InstanceID;
             $ret = IPS_RunScriptWaitEx($notify_script, $jdata);
             $scriptName = IPS_GetName($notify_script);

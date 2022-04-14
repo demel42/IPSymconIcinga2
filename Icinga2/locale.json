@@ -3,19 +3,28 @@
 		"de": {
 			"Disable instance": "Instanz deaktivieren",
 
+			"The following points of the configuration are incorrect":
+				"Die folgenden Punkte der Konfiguration sind fehlerhaft",
+			"Username must be specified": "Benutzer muss angegeben sein",
+			"Password must be specified": "Passwort muss angegeben sein",
+			"Host must be specified": "Hostname muss angegeben sein",
+			"Webhook is already used": "Webhook wird bereits verwendet",
+
 			"Host": "Host",
 			"Port": "Port",
 			"Use HTTPS": "HTTPS verwenden",
 			"API-User": "API-Benutzer",
 			"API-Password": "API-Passwort",
-			"Access to webhook": "Zugriff auf den WebHook",
+
+			"Webhook": "Webhook",
+			"Access to webhook": "Zugriff auf den Webhook",
 			"User": "Benutzer",
 			"Password": "Passwort",
-			"script for webhook to use for ...": "Script für WebHook zur Verwendung als ...",
+			"script for webhook to use for ...": "Script für Webhook zur Verwendung als ...",
 			" ... \"check\"": " ... \"check\"",
 			" ... \"event\"": " ... \"event\"",
 			" ... \"notify\"": " ... \"notify\"",
-			"Update status every X seconds": "Aktualisieren Status alle X Sekunden",
+			"Update interval": "Aktualisierungsintervall",
 			"Seconds": "Sekunden",
 
 			"access ok": "Zugriff in Ordnung",
@@ -39,7 +48,40 @@
 
 			"Verify API-access": "API-Zugriff prüfen",
 			"Update status": "Aktualisiere Status",
-			"Module description": "Modulbeschreibung",
+
+			"Test area": "Test-Bereich",
+
+			"Expert area": "Experten-Bereich",
+			"Re-install variable-profiles": "Variablenprofile erneut einrichten",
+
+			"Information": "Information",
+
+			"Category": "Kategorie",
+			"Instance": "Instanz",
+			"Variable": "Variable",
+			"Script": "Skript",
+			"Event": "Ereignis",
+			"Medium": "Medium",
+			"Link": "Verknüpfung",
+			"PHP script": "PHP-Skript",
+			"Flow plan": "Ablaufplan",
+			"Triggered event": "Ausgelöstes Ereignis",
+			"Cyclic event": "Zyklisches Ereignis",
+			"Scheduled event": "Geplantes Ereignis",
+			"References": "Referenzen",
+			"by instance used objects": "durch die Instanz verwendete Objekte",
+			"Objects using the instance": "Objekte, die die Instanz verwenden",
+			"Referenced statusvariables": "referenzierte Statusvariablen",
+			"Ident": "Ident",
+			"Object": "Objekt",
+			"Area": "Bereich",
+			"Name": "Bezeichnung",
+			"Open object": "Objekt öffnen",
+			"Timer": "Timer",
+			"Interval": "Intervall",
+			"Next run": "nächste Ausführung",
+			"Last run": "letzte Ausführung",
+			"Timer information": "Timer-Information",
 
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",
