@@ -4,11 +4,11 @@
 	"type": 3,
 	"vendor": "",
 	"aliases": [
-			"Icinga2"
-		],
+		"Icinga2"
+	],
 	"parentRequirements": [],
 	"childRequirements": [],
 	"implemented": [],
 	"prefix": "Icinga2",
-     "url": "https://github.com/demel42/IPSymconIcinga2/blob/master/README.md"
+	"url": "https://github.com/demel42/IPSymconIcinga2/blob/master/README.md"
 }

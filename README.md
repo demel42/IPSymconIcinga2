@@ -129,10 +129,12 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.10 @ 14.04.2022 17:03
+- 1.10 @ 16.04.2022 12:11
   - Anpassungen an IPS 6.2 (Prüfung auf ungültige ID's)
   - Möglichkeit der Anzeige der Instanz-Referenzen sowie referenzierte Statusvariablen sowie Timer
   - diverse interen Änderungen
+  - potentieller Namenskonflikt behoben
+  - Aktualisierung von submodule CommonStubs
 
 - 1.9 @ 22.12.2021 14:48
   - weitere Absicherung von IPS_GetSnapshotChanges()
