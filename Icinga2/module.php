@@ -32,16 +32,17 @@ class Icinga2 extends IPSModule
 
         $this->RegisterPropertyInteger('update_interval', '60');
 
-        $this->RegisterTimer('UpdateStatus', 0, 'Icinga2_UpdateStatus(' . $this->InstanceID . ');');
+        $this->RegisterAttributeString('UpdateInfo', '');
 
         $this->InstallVarProfiles(false);
+
+        $this->RegisterTimer('UpdateStatus', 0, $this->GetModulePrefix() . '_UpdateStatus(' . $this->InstanceID . ');');
 
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
 
-    private function CheckConfiguration()
+    private function CheckModuleConfiguration()
     {
-        $s = '';
         $r = [];
 
         $host = $this->ReadPropertyString('host');
@@ -67,19 +68,33 @@ class Icinga2 extends IPSModule
             $r[] = $this->Translate('Webhook is already used');
         }
 
-        if ($r != []) {
-            $s = $this->Translate('The following points of the configuration are incorrect') . ':' . PHP_EOL;
-            foreach ($r as $p) {
-                $s .= '- ' . $p . PHP_EOL;
-            }
-        }
-
-        return $s;
+        return $r;
     }
 
     public function ApplyChanges()
     {
         parent::ApplyChanges();
+
+        $propertyNames = ['check_script', 'event_script', 'notify_script'];
+        $this->MaintainReferences($propertyNames);
+
+        if ($this->CheckPrerequisites() != false) {
+            $this->MaintainTimer('UpdateStatus', 0);
+            $this->SetStatus(self::$IS_INVALIDPREREQUISITES);
+            return;
+        }
+
+        if ($this->CheckUpdate() != false) {
+            $this->MaintainTimer('UpdateStatus', 0);
+            $this->SetStatus(self::$IS_UPDATEUNCOMPLETED);
+            return;
+        }
+
+        if ($this->CheckConfiguration() != false) {
+            $this->MaintainTimer('UpdateStatus', 0);
+            $this->SetStatus(self::$IS_INVALIDCONFIG);
+            return;
+        }
 
         $vpos = 0;
         $this->MaintainVariable('BootTime', $this->Translate('Boot time'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
@@ -96,30 +111,14 @@ class Icinga2 extends IPSModule
         $vpos = 100;
         $this->MaintainVariable('LastUpdate', $this->Translate('Last update'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
 
-        $refs = $this->GetReferenceList();
-        foreach ($refs as $ref) {
-            $this->UnregisterReference($ref);
-        }
-        $propertyNames = ['check_script', 'event_script', 'notify_script'];
-        foreach ($propertyNames as $name) {
-            $oid = $this->ReadPropertyInteger($name);
-            if ($oid >= 10000) {
-                $this->RegisterReference($oid);
-            }
-        }
-
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
-            $this->SetTimerInterval('UpdateStatus', 0);
+            $this->MaintainTimer('UpdateStatus', 0);
             $this->SetStatus(IS_INACTIVE);
             return;
         }
 
-        if ($this->CheckConfiguration() != false) {
-            $this->SetTimerInterval('UpdateStatus', 0);
-            $this->SetStatus(self::$IS_INVALIDCONFIG);
-            return;
-        }
+        $this->SetStatus(IS_ACTIVE);
 
         if (IPS_GetKernelRunlevel() == KR_READY) {
             $hook = $this->ReadPropertyString('hook');
@@ -128,15 +127,13 @@ class Icinga2 extends IPSModule
             }
             $this->SetUpdateInterval();
         }
-
-        $this->SetStatus(IS_ACTIVE);
     }
 
-    public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
+    public function MessageSink($tstamp, $senderID, $message, $data)
     {
-        parent::MessageSink($TimeStamp, $SenderID, $Message, $Data);
+        parent::MessageSink($tstamp, $senderID, $message, $data);
 
-        if ($Message == IPS_KERNELMESSAGE && $Data[0] == KR_READY) {
+        if ($message == IPS_KERNELMESSAGE && $data[0] == KR_READY) {
             $hook = $this->ReadPropertyString('hook');
             if ($hook != '') {
                 $this->RegisterHook($hook);
@@ -149,27 +146,15 @@ class Icinga2 extends IPSModule
     {
         $sec = $this->ReadPropertyInteger('update_interval');
         $msec = $sec > 0 ? $sec * 1000 : 0;
-        $this->SetTimerInterval('UpdateStatus', $msec);
+        $this->MaintainTimer('UpdateStatus', $msec);
     }
 
     private function GetFormElements()
     {
-        $formElements = [];
+        $formElements = $this->GetCommonFormElements('Icinga2');
 
-        $formElements[] = [
-            'type'    => 'Label',
-            'caption' => 'Icinga2'
-        ];
-
-        @$s = $this->CheckConfiguration();
-        if ($s != '') {
-            $formElements[] = [
-                'type'    => 'Label',
-                'caption' => $s,
-            ];
-            $formElements[] = [
-                'type'    => 'Label',
-            ];
+        if ($this->GetStatus() == self::$IS_UPDATEUNCOMPLETED) {
+            return $formElements;
         }
 
         $formElements[] = [
@@ -265,20 +250,29 @@ class Icinga2 extends IPSModule
     {
         $formActions = [];
 
+        if ($this->GetStatus() == self::$IS_UPDATEUNCOMPLETED) {
+            $formActions[] = $this->GetCompleteUpdateFormAction();
+
+            $formActions[] = $this->GetInformationFormAction();
+            $formActions[] = $this->GetReferencesFormAction();
+
+            return $formActions;
+        }
+
         $formActions[] = [
             'type'    => 'Button',
             'caption' => 'Verify API-access',
-            'onClick' => 'Icinga2_VerifyAccess($id);'
+            'onClick' => $this->GetModulePrefix() . '_VerifyAccess($id);'
         ];
 
         $formActions[] = [
             'type'    => 'Button',
             'caption' => 'Update status',
-            'onClick' => 'Icinga2_UpdateStatus($id);'
+            'onClick' => $this->GetModulePrefix() . '_UpdateStatus($id);'
         ];
 
-        $formActions[] = $this->GetInformationForm();
-        $formActions[] = $this->GetReferencesForm();
+        $formActions[] = $this->GetInformationFormAction();
+        $formActions[] = $this->GetReferencesFormAction();
 
         return $formActions;
     }

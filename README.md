@@ -1,6 +1,6 @@
 # IPSymconIcinga2
 
-[![IPS-Version](https://img.shields.io/badge/Symcon_Version-5.3+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
+[![IPS-Version](https://img.shields.io/badge/Symcon_Version-6.0+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 ![Code](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
@@ -47,7 +47,7 @@ Das Implementierung beshränkt sich auf die Abfrage von Objekt-Daten, die vielf�
 
 ## 2. Voraussetzungen
 
- - IP-Symcon ab Version 5.3
+ - IP-Symcon ab Version 6.0
  - Icinga2-Instanz mit aktivertem API-Zugrif
 
 ## 3. Installation
@@ -128,6 +128,12 @@ GUIDs
   - Icinga2: `{970F623C-2A4B-4DB3-8C65-786381567D50}`
 
 ## 7. Versions-Historie
+
+- 1.10.1 @ 26.04.2022 15:01
+  - Implememtierung einer Update-Logik
+  - Übersetzung vervollständigt
+  - diverse interne Änderungen
+  - IPS-Version ist nun minimal 6.0
 
 - 1.10 @ 16.04.2022 12:11
   - Anpassungen an IPS 6.2 (Prüfung auf ungültige ID's)

@@ -4,9 +4,9 @@
 	"name": "Icinga2",
 	"url": "https://github.com/demel42/IPSymconIcinga",
 	"compatibility": {
-		"version": "5.3"
+		"version": "6.0"
 	},
-	"version": "1.10",
+	"version": "1.10.1",
 	"build": 0,
-	"date": 1650103918
+	"date": 1650978094
 }
