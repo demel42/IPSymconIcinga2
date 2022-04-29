@@ -1,0 +1,61 @@
+{
+	"translations": {
+		"de": {
+			"Icinga2": "Icinga2",
+
+			"__function__": "CheckConfiguration",
+			"Username must be specified": "Benutzer muss angegeben sein",
+			"Password must be specified": "Passwort muss angegeben sein",
+			"Host must be specified": "Hostname muss angegeben sein",
+			"Webhook is already used": "Webhook wird bereits verwendet",
+
+			"__elements__": "",
+			"Disable instance": "Instanz deaktivieren",
+
+			"Access configuration": "Zugangskonfiguration",
+			"Host": "Host",
+			"Port": "Port",
+			"Use HTTPS": "HTTPS verwenden",
+			"API-User": "API-Benutzer",
+			"API-Password": "API-Passwort",
+
+			"Webhook": "Webhook",
+			"Access to webhook": "Zugriff auf den Webhook",
+			"User": "Benutzer",
+			"Password": "Passwort",
+			"script for webhook to use for ...": "Script für Webhook zur Verwendung als ...",
+			" ... \"check\"": " ... \"check\"",
+			" ... \"event\"": " ... \"event\"",
+			" ... \"notify\"": " ... \"notify\"",
+			"Update interval": "Aktualisierungsintervall",
+			"Seconds": "Sekunden",
+
+			"__variables__": "",
+			"Boot time": "Startzeitpunkt",
+			"hosts with state UP": "Server mit Status UP",
+			"hosts with state DOWN": "Server mit Status DOWN",
+			"services with state OK": "Dienst mit Status OK",
+			"services with state WARNING": "Dienst mit Status WARNING",
+			"services with state CRITICAL": "Dienst mit Status CRITICAL",
+			"Last update": "letzte Aktualisierung",
+
+			"__actions__": "",
+			"Verify API-access": "API-Zugriff prüfen",
+			"Update status": "Aktualisiere Status",
+
+			"__function__": "VerifyAccess",
+			"access ok": "Zugriff in Ordnung",
+			"access failed": "Zugriff fehlgeschlagen",
+			"invalid configuration": "ungültige Konfiguration",
+			"access forbidden": "Zugriff verboten",
+			"server error": "Serverfehler",
+			"http error": "HTTP-Fehler",
+			"invalid data": "ungültige Daten",
+			"hosts": "Server",
+			"services": "Dienste",
+			"started": "gestartet",
+
+			"__end__": ""
+		}
+	}
+}

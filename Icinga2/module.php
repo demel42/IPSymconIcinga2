@@ -10,6 +10,15 @@ class Icinga2 extends IPSModule
     use Icinga2\StubsCommonLib;
     use Icinga2LocalLib;
 
+    private $ModuleDir;
+
+    public function __construct(string $InstanceID)
+    {
+        parent::__construct($InstanceID);
+
+        $this->ModuleDir = __DIR__;
+    }
+
     public function Create()
     {
         parent::Create();
