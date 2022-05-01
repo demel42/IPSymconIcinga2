@@ -884,7 +884,7 @@ class Icinga2 extends IPSModule
                 return;
             }
         }
-        if ($uri == '/hook/Icinga2') {
+        if ($uri == $this->ReadPropertyString('hook')) {
             $proc = isset($_POST['proc']) ? $_POST['proc'] : '';
             $this->SendDebug(__FUNCTION__, 'proc: ' . $proc, 0);
             switch ($proc) {
