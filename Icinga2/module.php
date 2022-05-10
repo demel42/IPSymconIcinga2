@@ -544,7 +544,7 @@ class Icinga2 extends IPSModule
         $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
 
         $check_script = $this->ReadPropertyInteger('check_script');
-        if ($check_script >= 10000) {
+        if (IPS_ScriptExists($check_script)) {
             $jdata['InstanceID'] = $this->InstanceID;
             $ret = IPS_RunScriptWaitEx($check_script, $jdata);
             $scriptName = IPS_GetName($check_script);
@@ -826,7 +826,7 @@ class Icinga2 extends IPSModule
         $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
 
         $event_script = $this->ReadPropertyInteger('event_script');
-        if ($event_script >= 10000) {
+        if (IPS_ScriptExists($event_script)) {
             $jdata['InstanceID'] = $this->InstanceID;
             $ret = IPS_RunScriptWaitEx($event_script, $jdata);
             $scriptName = IPS_GetName($event_script);
@@ -843,8 +843,7 @@ class Icinga2 extends IPSModule
         $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
 
         $notify_script = $this->ReadPropertyInteger('notify_script');
-        $this->SendDebug(__FUNCTION__, 'notify_script=' . $notify_script, 0);
-        if ($notify_script >= 10000) {
+        if (IPS_ScriptExists($notify_script)) {
             $jdata['InstanceID'] = $this->InstanceID;
             $ret = IPS_RunScriptWaitEx($notify_script, $jdata);
             $scriptName = IPS_GetName($notify_script);

@@ -129,6 +129,11 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.10.4 @ 10.05.2022 15:06
+  - update submodule CommonStubs
+  - SetLocation() -> GetConfiguratorLocation()
+  - weitere Absicherung ungültiger ID's
+
 - 1.10.3 @ 01.05.2022 12:39
   - Webhook besser prüfen
 
