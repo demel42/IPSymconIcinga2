@@ -89,19 +89,19 @@ class Icinga2 extends IPSModule
 
         if ($this->CheckPrerequisites() != false) {
             $this->MaintainTimer('UpdateStatus', 0);
-            $this->SetStatus(self::$IS_INVALIDPREREQUISITES);
+            $this->MaintainStatus(self::$IS_INVALIDPREREQUISITES);
             return;
         }
 
         if ($this->CheckUpdate() != false) {
             $this->MaintainTimer('UpdateStatus', 0);
-            $this->SetStatus(self::$IS_UPDATEUNCOMPLETED);
+            $this->MaintainStatus(self::$IS_UPDATEUNCOMPLETED);
             return;
         }
 
         if ($this->CheckConfiguration() != false) {
             $this->MaintainTimer('UpdateStatus', 0);
-            $this->SetStatus(self::$IS_INVALIDCONFIG);
+            $this->MaintainStatus(self::$IS_INVALIDCONFIG);
             return;
         }
 
@@ -123,11 +123,11 @@ class Icinga2 extends IPSModule
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
             $this->MaintainTimer('UpdateStatus', 0);
-            $this->SetStatus(IS_INACTIVE);
+            $this->MaintainStatus(IS_INACTIVE);
             return;
         }
 
-        $this->SetStatus(IS_ACTIVE);
+        $this->MaintainStatus(IS_ACTIVE);
 
         if (IPS_GetKernelRunlevel() == KR_READY) {
             $hook = $this->ReadPropertyString('hook');
@@ -151,7 +151,7 @@ class Icinga2 extends IPSModule
         }
     }
 
-    protected function SetUpdateInterval()
+    private function SetUpdateInterval()
     {
         $sec = $this->ReadPropertyInteger('update_interval');
         $msec = $sec > 0 ? $sec * 1000 : 0;
@@ -271,13 +271,13 @@ class Icinga2 extends IPSModule
         $formActions[] = [
             'type'    => 'Button',
             'caption' => 'Verify API-access',
-            'onClick' => $this->GetModulePrefix() . '_VerifyAccess($id);'
+            'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "VerifyAccess", "");',
         ];
 
         $formActions[] = [
             'type'    => 'Button',
             'caption' => 'Update status',
-            'onClick' => $this->GetModulePrefix() . '_UpdateStatus($id);'
+            'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "UpdateStatus", "");',
         ];
 
         $formActions[] = $this->GetInformationFormAction();
@@ -286,8 +286,29 @@ class Icinga2 extends IPSModule
         return $formActions;
     }
 
+    private function LocalRequestAction($ident, $value)
+    {
+        $r = false;
+        switch ($ident) {
+            case 'VerifyAccess':
+                $this->VerifyAccess();
+                $r = true;
+                break;
+            case 'UpdateStatus':
+                $this->UpdateStatus();
+                $r = true;
+                break;
+            default:
+                break;
+        }
+        return $r;
+    }
+
     public function RequestAction($ident, $value)
     {
+        if ($this->LocalRequestAction($ident, $value)) {
+            return;
+        }
         if ($this->CommonRequestAction($ident, $value)) {
             return;
         }
@@ -298,7 +319,7 @@ class Icinga2 extends IPSModule
         }
     }
 
-    public function UpdateStatus()
+    private function UpdateStatus()
     {
         if ($this->CheckStatus() == self::$STATUS_INVALID) {
             $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
@@ -340,14 +361,15 @@ class Icinga2 extends IPSModule
             }
         }
 
-        $this->SetStatus($statuscode ? $statuscode : IS_ACTIVE);
+        $this->MaintainStatus($statuscode ? $statuscode : IS_ACTIVE);
     }
 
-    public function VerifyAccess()
+    private function VerifyAccess()
     {
         if ($this->CheckStatus() == self::$STATUS_INVALID) {
             $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
-            echo $this->GetStatusText() . PHP_EOL;
+            $msg = $this->GetStatusText();
+            $this->PopupMessage($msg);
             return;
         }
 
@@ -423,10 +445,10 @@ class Icinga2 extends IPSModule
         }
 
         if ($statuscode > 0) {
-            $this->SetStatus($statuscode);
+            $this->MaintainStatus($statuscode);
         }
 
-        echo $msg;
+        $this->PopupMessage($msg);
     }
 
     private function do_HttpRequest($cmd, $args, $postdata, $mode, &$result)
