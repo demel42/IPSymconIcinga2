@@ -129,6 +129,10 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.11.1 @ 07.10.2022 13:59
+  - update submodule CommonStubs
+    Fix: Update-Prüfung wieder funktionsfähig
+
 - 1.11 @ 07.07.2022 12:10
   - einige Funktionen (GetFormElements, GetFormActions) waren fehlerhafterweise "protected" und nicht "private"
   - interne Funktionen sind nun private und ggfs nur noch via IPS_RequestAction() erreichbar
