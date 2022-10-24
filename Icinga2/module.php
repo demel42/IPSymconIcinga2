@@ -899,7 +899,7 @@ class Icinga2 extends IPSModule
             }
 
             if (($_SERVER['PHP_AUTH_USER'] != $hook_user) || ($_SERVER['PHP_AUTH_PW'] != $hook_password)) {
-                header('WWW-Authenticate: Basic Realm="Geofency WebHook"');
+                header('WWW-Authenticate: Basic Realm="Icinga2 WebHook"');
                 header('HTTP/1.0 401 Unauthorized');
                 echo 'Authorization required';
                 return;
