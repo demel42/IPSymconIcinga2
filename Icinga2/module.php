@@ -10,13 +10,16 @@ class Icinga2 extends IPSModule
     use Icinga2\StubsCommonLib;
     use Icinga2LocalLib;
 
-    private $ModuleDir;
-
     public function __construct(string $InstanceID)
     {
         parent::__construct($InstanceID);
 
-        $this->ModuleDir = __DIR__;
+        $this->CommonContruct(__DIR__);
+    }
+
+    public function __destruct()
+    {
+        $this->CommonDestruct();
     }
 
     public function Create()
@@ -41,7 +44,8 @@ class Icinga2 extends IPSModule
 
         $this->RegisterPropertyInteger('update_interval', '60');
 
-        $this->RegisterAttributeString('UpdateInfo', '');
+        $this->RegisterAttributeString('UpdateInfo', json_encode([]));
+        $this->RegisterAttributeString('ModuleStats', json_encode([]));
 
         $this->InstallVarProfiles(false);
 
@@ -582,6 +586,12 @@ class Icinga2 extends IPSModule
         $now = time();
 
         $counter = false;
+        $n_messages = 0;
+        $n_updates = 0;
+        $n_logs = 0;
+        $mps = 0;
+        $ups = 0;
+        $lps = 0;
         $d = $this->GetBuffer('snapshot');
         $this->SendDebug(__FUNCTION__, 'GetBuffer(snapshot)=' . $d, 0);
         if ($d != false) {
@@ -595,12 +605,6 @@ class Icinga2 extends IPSModule
             $r = IPS_GetSnapshotChanges(0);
             $snapshot = json_decode($r, true);
             $counter = $snapshot[0]['TimeStamp'];
-            $n_messages = 0;
-            $n_updates = 0;
-            $n_logs = 0;
-            $mps = 0;
-            $ups = 0;
-            $lps = 0;
         } else {
             @$r = IPS_GetSnapshotChanges($counter);
             if ($r == false) {
@@ -619,8 +623,6 @@ class Icinga2 extends IPSModule
             }
             $snapshot = json_decode($r, true);
             $n_messages = count($snapshot);
-            $n_updates = 0;
-            $n_logs = 0;
             foreach ($snapshot as $obj) {
                 $id = $obj['Message'];
                 $base_n = floor($id / 100) * 100;
@@ -633,11 +635,13 @@ class Icinga2 extends IPSModule
                         break;
                 }
             }
-            $counter = $snapshot[$n_messages - 1]['TimeStamp'];
-            $dif = $now - $tstamp;
-            $mps = floor($n_messages / $dif * 100) / 100;
-            $ups = floor($n_updates / $dif * 100) / 100;
-            $lps = floor($n_logs / $dif * 100) / 100;
+            if ($n_messages > 0) {
+                $counter = $snapshot[$n_messages - 1]['TimeStamp'];
+                $dif = $now - $tstamp;
+                $mps = floor($n_messages / $dif * 100) / 100;
+                $ups = floor($n_updates / $dif * 100) / 100;
+                $lps = floor($n_logs / $dif * 100) / 100;
+            }
         }
         $j = [
             'counter'=> $counter,
