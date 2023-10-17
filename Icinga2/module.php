@@ -638,9 +638,15 @@ class Icinga2 extends IPSModule
             if ($n_messages > 0) {
                 $counter = $snapshot[$n_messages - 1]['TimeStamp'];
                 $dif = $now - $tstamp;
-                $mps = floor($n_messages / $dif * 100) / 100;
-                $ups = floor($n_updates / $dif * 100) / 100;
-                $lps = floor($n_logs / $dif * 100) / 100;
+                if ($dif > 0) {
+                    $mps = floor($n_messages / $dif * 100) / 100;
+                    $ups = floor($n_updates / $dif * 100) / 100;
+                    $lps = floor($n_logs / $dif * 100) / 100;
+                } else {
+                    $mps = $n_messages;
+                    $ups = $n_updates;
+                    $lps = $n_logs;
+                }
             }
         }
         $j = [
