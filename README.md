@@ -129,7 +129,7 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.13 @ 17.10.2023 16:53
+- 1.13 @ 03.11.2023 11:06
   - Fix: Verhinderung von Division durch 0
   - Neu: Ermittlung von Speicherbedarf und Laufzeit (aktuell und für 31 Tage) und Anzeige im Panel "Information"
   - update submodule CommonStubs
