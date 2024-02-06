@@ -129,6 +129,10 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.14 @ 06.02.2024 09:46
+  - Verbesserung: Angleichung interner Bibliotheken anlässlich IPS 7
+  - update submodule CommonStubs
+
 - 1.13 @ 03.11.2023 11:06
   - Fix: Verhinderung von Division durch 0
   - Neu: Ermittlung von Speicherbedarf und Laufzeit (aktuell und für 31 Tage) und Anzeige im Panel "Information"
