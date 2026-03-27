@@ -547,7 +547,7 @@ class Icinga2 extends IPSModule
                 $err = 'got http-code ' . $httpcode . ' (server error)';
             } else {
                 $statuscode = self::$IS_HTTPERROR;
-                $err = "got http-code $httpcode";
+                $err = 'got http-code ' . $httpcode . ' (' . $this->HttpCode2Text($httpcode) . ')';
             }
         } else {
             $result = json_decode($cdata, true);
@@ -609,7 +609,7 @@ class Icinga2 extends IPSModule
             @$r = IPS_GetSnapshotChanges($counter);
             if ($r == false) {
                 $this->SendDebug(__FUNCTION__, 'unable to get snapshot (#' . $counter . '), resetting', 0);
-                $this->LogMessage('unable to get snapshot (#' . $counter . '), resetting', KL_NOTIFY);
+                // $this->LogMessage('unable to get snapshot (#' . $counter . '), resetting', KL_NOTIFY);
                 $this->SetBuffer('snapshot', '');
                 $r = IPS_GetSnapshotChanges(0);
                 $snapshot = json_decode($r, true);
@@ -617,7 +617,7 @@ class Icinga2 extends IPSModule
                 @$r = IPS_GetSnapshotChanges($counter);
                 if ($r == false) {
                     $this->SendDebug(__FUNCTION__, 'unable to get snapshot (#' . $counter . '), reset failed', 0);
-                    $this->LogMessage('unable to get snapshot (#' . $counter . '), reset failed', KL_NOTIFY);
+                    // $this->LogMessage('unable to get snapshot (#' . $counter . '), reset failed', KL_NOTIFY);
                     return;
                 }
             }
