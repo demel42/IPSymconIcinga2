@@ -129,6 +129,11 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.17 @ 10.05.2026 17:28
+  - Fix: Änderung von deprecated php code
+  - Verbesserung: beim Löschen einer Instanz werden die zugehörigen WebHook-Einträge ebenfalls gelöscht
+  - update submodule CommonStubs
+
 - 1.16 @ 27.03.2026 14:07
   - Fix: Anpassung für IPS 9
   - interne Änderung

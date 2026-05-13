@@ -15,9 +15,9 @@ $state = $_IPS['state'];
 switch ($state) {
     case 'DOWN':
     case 'CRITICAL':
-         $severity = 'alert';
-         $notify = true;
-         break;
+        $severity = 'alert';
+        $notify = true;
+        break;
     case 'WARNING':
         $severity = 'warn';
         $notify = false;
